@@ -1241,125 +1241,125 @@ pairs = [
 
 chatbot = Chat(pairs, reflections)
 
+if __name__ == "__main__":
+    print("Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions! \n- What's on the menu?\n- What can I get if I have seafood allergy?\n Suggest anything without pork. \nHow to place order?")
 
-print("Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions! \n- What's on the menu?\n- What can I get if I have seafood allergy?\n Suggest anything without pork. \nHow to place order?")
+    while True:
+        try:
+            user_input = input("> ").strip()
+            if user_input.lower() in ["quit", "exit", "bye"]:
+                print("Thank you for using ArcherEats Chatbot!")
+                break
 
-while True:
-    try:
-        user_input = input("> ").strip()
-        if user_input.lower() in ["quit", "exit", "bye"]:
-            print("Thank you for using ArcherEats Chatbot!")
-            break
+            if not user_input:
+                continue
 
-        if not user_input:
-            continue
+            response = chatbot.respond(user_input)
 
-        response = chatbot.respond(user_input)
+            if response:
+                clean_response = response.strip()
 
-        if response:
-            clean_response = response.strip()
+                if clean_response == "FETCH_MENU":
+                    print(get_available_menu())
 
-            if clean_response == "FETCH_MENU":
-                print(get_available_menu())
+                elif clean_response == "FETCH_VEGETARIAN":
+                    print(get_vegetarian_menu())
 
-            elif clean_response == "FETCH_VEGETARIAN":
-                print(get_vegetarian_menu())
+                elif clean_response.startswith("CATEGORY_"):
+                    category = clean_response.replace("CATEGORY_", "")
+                    print(get_category_menu(category))
 
-            elif clean_response.startswith("CATEGORY_"):
-                category = clean_response.replace("CATEGORY_", "")
-                print(get_category_menu(category))
+                elif clean_response.startswith("FOOD_WITH_ALLERGEN_"):
+                    allergen = clean_response.replace("FOOD_WITH_ALLERGEN_", "")
+                    print(get_food_with_allergen(allergen))
 
-            elif clean_response.startswith("FOOD_WITH_ALLERGEN_"):
-                allergen = clean_response.replace("FOOD_WITH_ALLERGEN_", "")
-                print(get_food_with_allergen(allergen))
+                elif clean_response.startswith("WITHOUT_"):
+                    category = clean_response.replace("WITHOUT_", "")
+                    print(get_category_removed_menu(category))
 
-            elif clean_response.startswith("WITHOUT_"):
-                category = clean_response.replace("WITHOUT_", "")
-                print(get_category_removed_menu(category))
+                elif clean_response.startswith("SUGGEST_WITHOUT_"):
+                    category = clean_response.replace("SUGGEST_WITHOUT_", "")
+                    print(get_food_suggestion("without_category", category))
 
-            elif clean_response.startswith("SUGGEST_WITHOUT_"):
-                category = clean_response.replace("SUGGEST_WITHOUT_", "")
-                print(get_food_suggestion("without_category", category))
+                elif clean_response.startswith("SUGGEST_CATEGORY_"):
+                    category = clean_response.replace("SUGGEST_CATEGORY_", "")
+                    print(get_food_suggestion("category", category))
 
-            elif clean_response.startswith("SUGGEST_CATEGORY_"):
-                category = clean_response.replace("SUGGEST_CATEGORY_", "")
-                print(get_food_suggestion("category", category))
+                elif clean_response.startswith("ALLERGEN_"):
+                    allergen = clean_response.replace("ALLERGEN_", "")
+                    print(get_allergen_safe_menu(allergen))
 
-            elif clean_response.startswith("ALLERGEN_"):
-                allergen = clean_response.replace("ALLERGEN_", "")
-                print(get_allergen_safe_menu(allergen))
+                elif clean_response.startswith("SUGGEST_BUDGET_"):
+                    amount = clean_response.replace("SUGGEST_BUDGET_", "")
+                    print(get_food_suggestion("budget", amount))
 
-            elif clean_response.startswith("SUGGEST_BUDGET_"):
-                amount = clean_response.replace("SUGGEST_BUDGET_", "")
-                print(get_food_suggestion("budget", amount))
+                elif clean_response == "SUGGEST_HIGHCAL":
+                    print(get_food_suggestion("high_cal"))
 
-            elif clean_response == "SUGGEST_HIGHCAL":
-                print(get_food_suggestion("high_cal"))
+                elif clean_response == "SUGGEST_LOWCAL":
+                    print(get_food_suggestion("low_cal"))
 
-            elif clean_response == "SUGGEST_LOWCAL":
-                print(get_food_suggestion("low_cal"))
+                elif clean_response == "SUGGEST_GENERAL":
+                    print(get_food_suggestion("general"))
 
-            elif clean_response == "SUGGEST_GENERAL":
-                print(get_food_suggestion("general"))
+                elif clean_response.startswith("SUGGEST_ALLERGEN_"):
+                    allergen = clean_response.replace("SUGGEST_ALLERGEN_", "")
+                    print(get_food_suggestion("allergen", allergen))
 
-            elif clean_response.startswith("SUGGEST_ALLERGEN_"):
-                allergen = clean_response.replace("SUGGEST_ALLERGEN_", "")
-                print(get_food_suggestion("allergen", allergen))
+                elif clean_response == "SUGGEST_CHEAPEST":
+                    print(get_food_suggestion("cheapest"))
 
-            elif clean_response == "SUGGEST_CHEAPEST":
-                print(get_food_suggestion("cheapest"))
+                elif clean_response == "SUGGEST_LOWESTCAL":
+                    print(get_food_suggestion("lowest_cal"))
 
-            elif clean_response == "SUGGEST_LOWESTCAL":
-                print(get_food_suggestion("lowest_cal"))
+                elif clean_response == "SUGGEST_FILLING":
+                    print(get_food_suggestion("filling"))
 
-            elif clean_response == "SUGGEST_FILLING":
-                print(get_food_suggestion("filling"))
+                elif clean_response == "SUGGEST_VEGETARIAN":
+                    print(get_food_suggestion("vegetarian"))
 
-            elif clean_response == "SUGGEST_VEGETARIAN":
-                print(get_food_suggestion("vegetarian"))
+                elif clean_response.startswith("INFO_"):
+                    food = clean_response.replace("INFO_", "")
+                    print(get_food_description(food))
 
-            elif clean_response.startswith("INFO_"):
-                food = clean_response.replace("INFO_", "")
-                print(get_food_description(food))
+                elif clean_response.startswith("PRICE_"):
+                    food = clean_response.replace("PRICE_", "")
+                    print(get_food_price(food))
 
-            elif clean_response.startswith("PRICE_"):
-                food = clean_response.replace("PRICE_", "")
-                print(get_food_price(food))
+                elif clean_response.startswith("CALORIES_"):
+                    food = clean_response.replace("CALORIES_", "")
+                    print(get_food_calories(food))
 
-            elif clean_response.startswith("CALORIES_"):
-                food = clean_response.replace("CALORIES_", "")
-                print(get_food_calories(food))
+                elif clean_response.startswith("CHECK_ALLERGEN_"):
+                    payload = clean_response.replace("CHECK_ALLERGEN_", "")
+                    if "|" in payload:
+                        food_item, allergen = payload.split("|", 1)
+                        print(check_item_allergen(food_item, allergen))
+                    else:
+                        print("Could not process allergen check query.")
 
-            elif clean_response.startswith("CHECK_ALLERGEN_"):
-                payload = clean_response.replace("CHECK_ALLERGEN_", "")
-                if "|" in payload:
-                    food_item, allergen = payload.split("|", 1)
-                    print(check_item_allergen(food_item, allergen))
+                elif clean_response.startswith("MEAL_"):
+                    meal = clean_response.replace("MEAL_", "")
+                    print(get_meal_type_menu(meal))
+
+                elif clean_response.startswith("CREATE_ORDER_"):
+                    payload = clean_response.replace("CREATE_ORDER_", "")
+                    if "|" in payload:
+                        count_str, food_query = payload.split("|", 1)
+                        print(process_order_creation(count_str, food_query))
+
+                elif clean_response == "IDENTIFY_ALLERGY":
+                    response_msg = add_allergies()
+                    print(response_msg)
+
+                    if "Gotcha!" in response_msg:
+                        print(get_allergen_safe_menu())
                 else:
-                    print("Could not process allergen check query.")
-
-            elif clean_response.startswith("MEAL_"):
-                meal = clean_response.replace("MEAL_", "")
-                print(get_meal_type_menu(meal))
-
-            elif clean_response.startswith("CREATE_ORDER_"):
-                payload = clean_response.replace("CREATE_ORDER_", "")
-                if "|" in payload:
-                    count_str, food_query = payload.split("|", 1)
-                    print(process_order_creation(count_str, food_query))
-
-            elif clean_response == "IDENTIFY_ALLERGY":
-                response_msg = add_allergies()
-                print(response_msg)
-
-                if "Gotcha!" in response_msg:
-                    print(get_allergen_safe_menu())
+                    print(response)
             else:
-                print(response)
-        else:
-            print(
-                "I understand the general topic, but could you please rephrase your request?"
-            )
+                print(
+                    "I understand the general topic, but could you please rephrase your request?"
+                )
 
-    except (KeyboardInterrupt, EOFError, SystemExit):
-        break
+        except (KeyboardInterrupt, EOFError, SystemExit):
+            break
