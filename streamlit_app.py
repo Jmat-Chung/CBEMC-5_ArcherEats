@@ -145,6 +145,7 @@ for msg in st.session_state.messages:
 if user_input := st.chat_input("Ask ArcherEats..."):
     
     # 1. Show user message
+    user_input = user_input.replace('\n', '').replace('\r', '').strip()
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user", avatar="👤"):
         st.markdown(user_input)
