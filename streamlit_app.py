@@ -1,8 +1,7 @@
 import streamlit as st
-from streamlit_chat import message
 import re
 
-# Import the chatbot and helper functions from your now-silent ChatBot.py
+# Import the chatbot and helper functions from ChatBot.py
 from ChatBot import (
     chatbot, 
     FOOD_DATABASE, 
@@ -22,64 +21,53 @@ from ChatBot import (
     check_item_allergen
 )
 
-# 1. Custom Visual Branding and Layout from the image
+# --- 1. Page Configuration & Custom DLSU Green Header ---
 st.set_page_config(page_title="ArcherBot", page_icon="🏹", layout="centered")
 
-# Custom CSS for colors and appearance (Matching the dark green header and fonts)
+# Custom CSS for DLSU Green branding matching your reference image
 st.markdown("""
     <style>
-    /* Dark Green Header Band */
+    /* Dark Green Header Bar */
     .main-header {
-        background-color: #1e5a36; /* Exact DLSU Green */
+        background-color: #1e5a36; /* DLSU Green */
         color: white;
         padding: 20px 25px;
-        border-radius: 10px;
+        border-radius: 12px;
         margin-bottom: 25px;
-        display: flex;
-        flex-direction: column;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
     }
     .main-header .sub-text {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 14px;
         font-weight: 300;
         opacity: 0.9;
-        margin-bottom: -5px;
     }
     .main-header .main-title {
-        font-family: 'Georgia', serif; /* Serif-like font for "ArcherBot" */
-        font-size: 36px;
+        font-family: 'Georgia', serif;
+        font-size: 34px;
         font-weight: bold;
-        margin: 0;
-    }
-    
-    /* Fix input alignment and general container spacing */
-    .block-container {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-    
-    /* Advanced chat styling adjustment for cleaner integration */
-    [data-testid="stChatMessage"] {
-        padding: 1rem 1.5rem;
+        margin-top: 4px;
     }
     </style>
     
     <div class="main-header">
-        <span class="sub-text">Powered by DLSU Dining</span>
-        <span class="main-title">ArcherBot</span>
+        <div class="sub-text">Powered by DLSU Dining</div>
+        <div class="main-title">ArcherBot</div>
     </div>
 """, unsafe_allow_html=True)
 
 
-# 2. Chat History Initializer (Remembering the conversation)
+# --- 2. Chat Session History ---
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hi! I'm ArcherBot 🤖 Ask me anything about today's menu, prices, or allergens!"}
+        {
+            "role": "assistant", 
+            "content": "Hi! I'm ArcherBot 🤖 Ask me anything about today's menu, prices, or allergens!"
+        }
     ]
 
 
-# 3. Web-Safe Order Creation (Bypasses terminal y/n input)
-# We must use this instead of process_order_creation() which freezes the server
+# --- 3. Web-Safe Order Function (No blocking terminal inputs) ---
 def web_process_order(count_str, food_query):
     try:
         count = int(count_str)
@@ -102,7 +90,7 @@ def web_process_order(count_str, food_query):
         "id_number": USER_ID_NUMBER,
         "food_name": selected_item["name"],
         "count": count,
-        "with_rice": False, # Default to without rice, we cannot ask y/n easily on web
+        "with_rice": False,
         "order_number": order_num,
     }
     orders_queue.append(new_order)
@@ -110,48 +98,36 @@ def web_process_order(count_str, food_query):
     unit_price = selected_item["price"]
     total = unit_price * count
     
-    # Using markdown for nice formatting of the receipt
-    bot_text = (
+    return (
         f"✅ **Order Placed!**\n\n"
-        f"• ID Number : `{USER_ID_NUMBER}`\n"
-        f"• Item      : {count}x {selected_item['name']} (ala carte)\n"
-        f"• Unit Price: ₱{unit_price}\n"
-        f"• Total     : **₱{total}**\n\n"
-        f"Your order number is **#{order_num}**. You are number {order_num} in queue."
-    )
-    return bot_text
-
-
-# 4. Main Chat Interface Logic
-# The chat bubbles are generated dynamically, pinned inputs below.
-
-# Display all existing chat history from the session memory
-for idx, msg in enumerate(st.session_state.messages):
-    # Using advanced streamlit_chat component for better visual bubbles (and avatars)
-    message(
-        msg["content"], 
-        is_user=(msg["role"] == "user"), 
-        key=f"msg_{idx}", 
-        # Using a green avatar for the bot
-        logo="https://raw.githubusercontent.com/streamlit/chat-sample/master/logo/logo-green.png" if msg["role"] == "assistant" else None
+        f"• **Item:** {count}x {selected_item['name']}\n"
+        f"• **Total:** ₱{total}\n"
+        f"• **Order Number:** `#{order_num}`\n\n"
+        f"You are number {order_num} in queue."
     )
 
 
-# 5. Handle New User Input
+# --- 4. Render Chat History ---
+for msg in st.session_state.messages:
+    avatar = "🤖" if msg["role"] == "assistant" else "👤"
+    with st.chat_message(msg["role"], avatar=avatar):
+        st.markdown(msg["content"])
+
+
+# --- 5. User Input & Bot Response Handling ---
 if user_input := st.chat_input("Ask ArcherBot..."):
-    # Display and store the user's message immediately
+    # Render user message
     st.session_state.messages.append({"role": "user", "content": user_input})
-    message(user_input, is_user=True, key=f"new_{len(st.session_state.messages)}")
+    with st.chat_message("user", avatar="👤"):
+        st.markdown(user_input)
 
-    # Process response via NLTK chatbot
+    # Process response with ChatBot logic
     response = chatbot.respond(user_input)
     bot_text = "I understand the topic, but could you please rephrase your request?"
 
     if response:
         clean_response = response.strip()
 
-        # Complex response handler (Connecting NLTK intent tags to logic)
-        # All original intents from ChatBot.py's while loop are mapped here.
         if clean_response == "FETCH_MENU":
             bot_text = get_available_menu()
         elif clean_response == "FETCH_VEGETARIAN":
@@ -203,18 +179,13 @@ if user_input := st.chat_input("Ask ArcherBot..."):
             payload = clean_response.replace("CREATE_ORDER_", "")
             if "|" in payload:
                 count_str, food_query = payload.split("|", 1)
-                # Call our specialized web order function (NO BLOCKING INPUTS)
                 bot_text = web_process_order(count_str, food_query)
         elif clean_response == "IDENTIFY_ALLERGY":
-            bot_text = "Please specify exactly what you are allergic to (e.g., 'I am allergic to eggs')."
+            bot_text = "Please specify what you are allergic to (e.g., 'I am allergic to eggs')."
         else:
             bot_text = clean_response
 
-    # Display and store the bot's response
+    # Render bot message
     st.session_state.messages.append({"role": "assistant", "content": bot_text})
-    message(
-        bot_text, 
-        is_user=False, 
-        key=f"bot_{len(st.session_state.messages)}",
-        logo="https://raw.githubusercontent.com/streamlit/chat-sample/master/logo/logo-green.png"
-    )
+    with st.chat_message("assistant", avatar="🤖"):
+        st.markdown(bot_text)
