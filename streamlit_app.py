@@ -9,55 +9,103 @@
 # =====================================================================
 
 import streamlit as st
+
+# Import the chatbot and helper functions from ChatBot.py
 from ChatBot import (
-    chatbot, 
-    FOOD_DATABASE, 
-    orders_queue,
+    FOOD_DATABASE,
     USER_ID_NUMBER,
-    register_user_allergy,
-    get_available_menu, 
-    get_vegetarian_menu,
-    get_meal_type_menu,
+    chatbot,
+    check_item_allergen,
+    get_allergen_safe_menu,
+    get_available_menu,
     get_category_menu,
     get_category_removed_menu,
-    get_food_with_allergen,
-    get_allergen_safe_menu,
-    get_food_suggestion,
+    get_food_calories,
     get_food_description,
     get_food_price,
-    get_food_calories,
-    check_item_allergen,
-    get_queue_display
+    get_food_suggestion,
+    get_food_with_allergen,
+    get_meal_type_menu,
+    get_queue_display,
+    get_vegetarian_menu,
+    orders_queue,
+    register_user_allergy,
 )
 
+# --- Page Configuration ---
 st.set_page_config(page_title="ArcherEats", page_icon="🏹", layout="centered")
 
-# --- Initialize Session Memory State ---
+# --- Custom Styling Header ---
+st.markdown(
+    """
+    <style>
+    .main-header {
+        background-color: #1e5a36;
+        color: white;
+        padding: 20px 25px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+    .main-header .sub-text {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 300;
+        opacity: 0.9;
+    }
+    .main-header .main-title {
+        font-family: 'Georgia', serif;
+        font-size: 34px;
+        font-weight: bold;
+        margin-top: 4px;
+    }
+    </style>
+    
+    <div class="main-header">
+        <div class="sub-text">CBEMC-5 ChatBot by CHUNG-NOMOTO-RICALDE-VASCO</div>
+        <div class="main-title">ArcherEats</div>
+    </div>
+""",
+    unsafe_allow_html=True,
+)
+
+# --- Initialize Session State Memory ---
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions!  \n- What's on the menu?  \n- What can I get if I have seafood allergy?  \n- Suggest anything without pork.  \n- How to place order?"}
+        {
+            "role": "assistant",
+            "content": "Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions!  \n- What's on the menu?  \n- What can I get if I have seafood allergy?  \n- Suggest anything without pork.  \n- How to place order?",
+        }
     ]
 if "order_state" not in st.session_state:
     st.session_state.order_state = "IDLE"
 if "pending_order" not in st.session_state:
     st.session_state.pending_order = None
 
-# LOCAL MEMORY IN SESSION STATE
 if "user_allergies" not in st.session_state:
     st.session_state.user_allergies = []
 if "last_discussed_food" not in st.session_state:
     st.session_state.last_discussed_food = None
 
 
+# --- Web Ordering Functions ---
 def start_web_order(count_str, food_query):
     try:
         count = int(count_str)
-        if count <= 0: return "Order quantity must be at least 1."
+        if count <= 0:
+            return "Order quantity must be at least 1."
     except ValueError:
         return "Invalid order quantity."
 
     food_query_clean = food_query.strip().upper()
-    selected_item = next((item for item in FOOD_DATABASE if food_query_clean in item["name"].upper()), None)
+    selected_item = next(
+        (
+            item
+            for item in FOOD_DATABASE
+            if food_query_clean in item["name"].upper()
+        ),
+        None,
+    )
 
     if not selected_item:
         return f"Sorry, we couldn't find '{food_query.title()}' on our menu."
@@ -67,7 +115,7 @@ def start_web_order(count_str, food_query):
     st.session_state.pending_order = {
         "item": selected_item,
         "count": count,
-        "with_rice": False
+        "with_rice": False,
     }
     st.session_state.order_state = "AWAITING_RICE"
     st.session_state.last_discussed_food = selected_item["name"]
@@ -96,16 +144,16 @@ def generate_order_summary():
     )
 
 
-# --- Render Messages ---
+# --- Render Chat History ---
 for msg in st.session_state.messages:
     avatar = "🤖" if msg["role"] == "assistant" else "👤"
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 
 
-# --- Handle Input ---
+# --- Handle Input & Engine Execution ---
 if user_input := st.chat_input("Ask ArcherEats..."):
-    user_input = user_input.replace('\n', '').replace('\r', '').strip()
+    user_input = user_input.replace("\n", "").replace("\r", "").strip()
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user", avatar="👤"):
         st.markdown(user_input)
@@ -113,13 +161,13 @@ if user_input := st.chat_input("Ask ArcherEats..."):
     user_input_clean = user_input.strip().lower()
     bot_text = ""
 
-    # Ordering state engine
+    # 1. State Machine Handling for Ordering Flow
     if st.session_state.order_state == "AWAITING_RICE":
-        if user_input_clean in ['y', 'yes']:
+        if user_input_clean in ["y", "yes"]:
             st.session_state.pending_order["with_rice"] = True
             bot_text = generate_order_summary()
             st.session_state.order_state = "AWAITING_CONFIRM"
-        elif user_input_clean in ['n', 'no']:
+        elif user_input_clean in ["n", "no"]:
             st.session_state.pending_order["with_rice"] = False
             bot_text = generate_order_summary()
             st.session_state.order_state = "AWAITING_CONFIRM"
@@ -130,13 +178,15 @@ if user_input := st.chat_input("Ask ArcherEats..."):
         if user_input_clean == "confirm":
             pending = st.session_state.pending_order
             order_num = len(orders_queue) + 1
-            orders_queue.append({
-                "id_number": USER_ID_NUMBER,
-                "food_name": pending["item"]["name"],
-                "count": pending["count"],
-                "with_rice": pending["with_rice"],
-                "order_number": order_num,
-            })
+            orders_queue.append(
+                {
+                    "id_number": USER_ID_NUMBER,
+                    "food_name": pending["item"]["name"],
+                    "count": pending["count"],
+                    "with_rice": pending["with_rice"],
+                    "order_number": order_num,
+                }
+            )
             bot_text = f"✅ **Order Placed Successfully!**\nYour order number is `#{order_num}`."
             st.session_state.order_state = "IDLE"
             st.session_state.pending_order = None
@@ -147,10 +197,10 @@ if user_input := st.chat_input("Ask ArcherEats..."):
         else:
             bot_text = "Please type CONFIRM or CANCEL."
 
-    # Standard query processing
+    # 2. Standard Chatbot Intent Handling
     else:
         response = chatbot.respond(user_input)
-        
+
         if response:
             clean_response = response.strip()
 
@@ -161,16 +211,28 @@ if user_input := st.chat_input("Ask ArcherEats..."):
             elif clean_response == "DISPLAY_QUEUE":
                 bot_text = get_queue_display()
             elif clean_response.startswith("CATEGORY_"):
-                bot_text = get_category_menu(clean_response.replace("CATEGORY_", ""))
+                bot_text = get_category_menu(
+                    clean_response.replace("CATEGORY_", "")
+                )
             elif clean_response.startswith("WITHOUT_"):
-                bot_text = get_category_removed_menu(clean_response.replace("WITHOUT_", ""))
+                bot_text = get_category_removed_menu(
+                    clean_response.replace("WITHOUT_", "")
+                )
+            elif clean_response.startswith("FOOD_WITH_ALLERGEN_"):
+                bot_text = get_food_with_allergen(
+                    clean_response.replace("FOOD_WITH_ALLERGEN_", "")
+                )
             elif clean_response.startswith("ALLERGEN_"):
                 allergen = clean_response.replace("ALLERGEN_", "")
-                bot_text = get_allergen_safe_menu(allergen, st.session_state.user_allergies)
+                bot_text = get_allergen_safe_menu(
+                    allergen, st.session_state.user_allergies
+                )
             elif clean_response.startswith("REGISTER_ALLERGY_"):
                 allergen = clean_response.replace("REGISTER_ALLERGY_", "")
-                confirm_msg, st.session_state.user_allergies = register_user_allergy(
-                    allergen, st.session_state.user_allergies
+                confirm_msg, st.session_state.user_allergies = (
+                    register_user_allergy(
+                        allergen, st.session_state.user_allergies
+                    )
                 )
                 safe_menu = get_allergen_safe_menu(
                     user_allergies=st.session_state.user_allergies
@@ -209,13 +271,11 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                         food, st.session_state.last_discussed_food
                     )
                 )
-
             elif clean_response.startswith("PRICE_"):
                 food = clean_response.replace("PRICE_", "")
                 bot_text, st.session_state.last_discussed_food = (
                     get_food_price(food, st.session_state.last_discussed_food)
                 )
-
             elif clean_response.startswith("CALORIES_"):
                 food = clean_response.replace("CALORIES_", "")
                 bot_text, st.session_state.last_discussed_food = (
@@ -223,7 +283,6 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                         food, st.session_state.last_discussed_food
                     )
                 )
-
             elif clean_response.startswith("CHECK_ALLERGEN_"):
                 payload = clean_response.replace("CHECK_ALLERGEN_", "")
                 if "|" in payload:
@@ -236,7 +295,9 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                         )
                     )
             elif clean_response == "IDENTIFY_ALLERGY":
-                bot_text = "Please state your allergy (e.g., 'I am allergic to eggs')."
+                bot_text = (
+                    "Please state your allergy (e.g., 'I am allergic to eggs')."
+                )
             elif clean_response.startswith("CREATE_ORDER_"):
                 payload = clean_response.replace("CREATE_ORDER_", "")
                 if "|" in payload:
@@ -253,7 +314,7 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                 "• **Order**: *'1 Roast Pork'*"
             )
 
-    bot_text = str(bot_text).replace('\n', '  \n')
+    bot_text = str(bot_text).replace("\n", "  \n")
     st.session_state.messages.append({"role": "assistant", "content": bot_text})
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot_text)
