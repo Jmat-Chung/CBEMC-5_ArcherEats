@@ -1242,7 +1242,7 @@ pairs = [
 chatbot = Chat(pairs, reflections)
 
 if __name__ == "__main__":
-    print("Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions! \n- What's on the menu?\n- What can I get if I have seafood allergy?\n Suggest anything without pork. \nHow to place order?")
+    print("Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions! \n- What's on the menu?\n- What can I get if I have seafood allergy?\n- Suggest anything without pork. \n- How to place order?")
 
     while True:
         try:

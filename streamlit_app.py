@@ -59,7 +59,7 @@ st.markdown("""
 # We use this to remember where the user is in the ordering process
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hi, I'm ArcherEats. How can I help you?"}
+        {"role": "assistant", "content": "Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions!  \n- What's on the menu?  \n- What can I get if I have seafood allergy?  \n- Suggest anything without pork.  \n- How to place order?"}
     ]
 if "order_state" not in st.session_state:
     st.session_state.order_state = "IDLE"  # Can be IDLE, AWAITING_RICE, AWAITING_CONFIRM
