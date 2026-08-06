@@ -211,7 +211,6 @@ FOOD_DATABASE = [
 
 last_discussed_food = None
 last_discussed_allergen = None
-user_allergies = []
 USER_ID_NUMBER = 12345678
 
 
@@ -257,8 +256,8 @@ def normalize_allergen(allergen_str):
 
 # we adding sa list of allergy ni user kasi we care we remember 
 
-def register_user_allergy(allergen_type):
-    global user_allergies, last_discussed_allergen
+def register_user_allergy(allergen_type, user_allergies):
+    global last_discussed_allergen
     target = normalize_allergen(allergen_type)
     if target not in user_allergies:
         user_allergies.append(target)
@@ -273,9 +272,12 @@ def register_user_allergy(allergen_type):
 
 # this is the asking and the checking for allergies
 
-def add_allergies(allergen_type=None):
+def add_allergies(allergen_type=None, user_allergies=None):
+    if user_allergies is None:
+        user_allergies = []
+
     if allergen_type:
-        return register_user_allergy(allergen_type)
+        return register_user_allergy(allergen_type, user_allergies)
 
     print("What are you allergic to? [give only 1|none if none]")
     user_input = input("> ").strip()
@@ -291,7 +293,7 @@ def add_allergies(allergen_type=None):
     else:
         allergen = user_input.lower().strip()
 
-    return register_user_allergy(allergen)
+    return register_user_allergy(allergen, user_allergies)
 
 # show menu all available
 
@@ -470,8 +472,9 @@ def get_food_with_allergen(allergen_type):
 
 # from all the evil that surrounds me defend me
 
-def get_allergen_safe_menu(allergen_type=None):
-    global user_allergies
+def get_allergen_safe_menu(allergen_type=None, user_allergies=None):
+    if user_allergies is None:
+        user_allergies = []
 
     if allergen_type:
         target = normalize_allergen(allergen_type)
@@ -1242,6 +1245,7 @@ pairs = [
 chatbot = Chat(pairs, reflections)
 
 if __name__ == "__main__":
+    user_allergies = []
     print("Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions! \n- What's on the menu?\n- What can I get if I have seafood allergy?\n- Suggest anything without pork. \n- How to place order?")
 
     while True:
@@ -1349,11 +1353,11 @@ if __name__ == "__main__":
                         print(process_order_creation(count_str, food_query))
 
                 elif clean_response == "IDENTIFY_ALLERGY":
-                    response_msg = add_allergies()
+                    response_msg = add_allergies(user_allergies=user_allergies)
                     print(response_msg)
 
                     if "Gotcha!" in response_msg:
-                        print(get_allergen_safe_menu())
+                        print(get_allergen_safe_menu(user_allergies=user_allergies))
                 else:
                     print(response)
             else:
