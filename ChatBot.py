@@ -2,30 +2,26 @@
 #  CBEMC-5 X40
 #  Final Project - ArcherEats Chatbot
 #  Members:
-    # CHUNG, Josh Matthew A.
-    # NOMOTO, Shintaroh
-    # RICALDE, Jhobert Alfonso V.
-    # VASCO, Victor Gerald N.
+#    - CHUNG, Josh Matthew A.
+#    - NOMOTO, Shintaroh
+#    - RICALDE, Jhobert Alfonso V.
+#    - VASCO, Victor Gerald N.
 # =====================================================================
-
-
-# shin is in night shift mode frr
 
 import random
 import nltk
 from nltk.chat.util import Chat, reflections
 
-# stolen i mean collected from the UH CAFEtEriA
-
 FOOD_DATABASE = [
     {
         "name": "STEAMED RICE",
-        "description": "",
+        "description": "Steamed white rice, cooked fluffy and soft.",
         "price": 15,
         "kcal": 205,
         "allergens": [],
-        "isAvailable": False, # also ginawa ko false toh coz lets assume bibili sila ng meal and gawin nalang parang add on yung rice 
-        "isVegetarian": True
+        "keywords": ["rice", "carbs", "side", "staple"],
+        "isAvailable": False,
+        "isVegetarian": True,
     },
     {
         "name": "ROAST PORK",
@@ -35,7 +31,7 @@ FOOD_DATABASE = [
         "allergens": ["gluten", "celery", "mustard", "soybean", "sulphite"],
         "keywords": ["pork", "meat", "lunch", "roasted", "heavy"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "BREADED FISH FILLET",
@@ -45,7 +41,7 @@ FOOD_DATABASE = [
         "allergens": ["seafood", "egg", "gluten"],
         "keywords": ["fish", "lunch", "light"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "DAING NA BANGUS",
@@ -55,17 +51,25 @@ FOOD_DATABASE = [
         "allergens": ["soybean", "fish", "gluten", "seafood"],
         "keywords": ["fish", "lunch", "fried"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "BRAISED BEEF",
         "description": "Slow-braised beef in rich sauce.",
         "price": 105,
         "kcal": 218,
-        "allergens": ["soybean", "gluten", "sesame", "celery", "sulphite", "milk", "mustard"],
+        "allergens": [
+            "soybean",
+            "gluten",
+            "sesame",
+            "celery",
+            "sulphite",
+            "milk",
+            "mustard",
+        ],
         "keywords": ["beef", "meat", "lunch", "heavy"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "FRIED EGG",
@@ -75,7 +79,7 @@ FOOD_DATABASE = [
         "allergens": ["egg"],
         "keywords": ["fried", "breakfast", "lunch", "light", "protein"],
         "isAvailable": True,
-        "isVegetarian": True
+        "isVegetarian": True,
     },
     {
         "name": "FRIED HUNGARIAN SAUSAGE",
@@ -85,7 +89,7 @@ FOOD_DATABASE = [
         "allergens": ["gluten", "soybean"],
         "keywords": ["fried", "breakfast"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "FRIED HOTDOG",
@@ -95,7 +99,7 @@ FOOD_DATABASE = [
         "allergens": ["soybean", "milk", "mustard", "gluten", "sulphite"],
         "keywords": ["fried", "breakfast"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "PORK BBQ",
@@ -105,7 +109,7 @@ FOOD_DATABASE = [
         "allergens": ["soybean", "mustard", "gluten", "sulphite"],
         "keywords": ["pork", "meat", "lunch"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "PORK MENUDO",
@@ -115,17 +119,26 @@ FOOD_DATABASE = [
         "allergens": ["soybean", "milk", "crustaceans", "celery", "sulphite"],
         "keywords": ["pork", "meat", "lunch"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "SINIGANG NA SALMON",
         "description": "Salmon in a sour tamarind soup with vegetables.",
         "price": 140,
         "kcal": 165,
-        "allergens": ["gluten", "fish", "soybean", "crustacean", "celery", "egg", "milk", "seafood"],
+        "allergens": [
+            "gluten",
+            "fish",
+            "soybean",
+            "crustacean",
+            "celery",
+            "egg",
+            "milk",
+            "seafood",
+        ],
         "keywords": ["fish", "soup", "lunch"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "TOFU SISIG",
@@ -135,7 +148,7 @@ FOOD_DATABASE = [
         "allergens": ["soybean", "gluten", "milk", "celery"],
         "keywords": ["lunch"],
         "isAvailable": True,
-        "isVegetarian": True
+        "isVegetarian": True,
     },
     {
         "name": "FRIED CHICKEN",
@@ -145,17 +158,24 @@ FOOD_DATABASE = [
         "allergens": ["chicken", "egg", "gluten", "soybean"],
         "keywords": ["chicken", "meat", "fried", "lunch"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "MONGGO WITH AMPALAYA LEAVES",
         "description": "Monggo bean stew with ampalaya leaves.",
         "price": 60,
         "kcal": 98,
-        "allergens": ["gluten", "soybean", "milk", "crustaceans", "celery", "sulphite"],
+        "allergens": [
+            "gluten",
+            "soybean",
+            "milk",
+            "crustaceans",
+            "celery",
+            "sulphite",
+        ],
         "keywords": ["lunch"],
         "isAvailable": True,
-        "isVegetarian": True
+        "isVegetarian": True,
     },
     {
         "name": "BEEF MONGOLIAN",
@@ -165,17 +185,26 @@ FOOD_DATABASE = [
         "allergens": ["chicken", "soybean"],
         "keywords": ["beef", "meat", "lunch"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "CHICKEN NUGGETS",
         "description": "Crispy chicken nuggets.",
         "price": 75,
         "kcal": 240,
-        "allergens": ["milk", "soybean", "wheat", "sulphite", "egg", "crustacean", "celery", "mustard"],
+        "allergens": [
+            "milk",
+            "soybean",
+            "wheat",
+            "sulphite",
+            "egg",
+            "crustacean",
+            "celery",
+            "mustard",
+        ],
         "keywords": ["chicken", "meat", "lunch"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "AMPALAYA W/ EGG",
@@ -185,7 +214,7 @@ FOOD_DATABASE = [
         "allergens": ["egg"],
         "keywords": ["lunch"],
         "isAvailable": True,
-        "isVegetarian": True
+        "isVegetarian": True,
     },
     {
         "name": "FRIED RICE",
@@ -195,7 +224,7 @@ FOOD_DATABASE = [
         "allergens": ["chicken", "milk", "soybean", "celery"],
         "keywords": ["breakfast"],
         "isAvailable": True,
-        "isVegetarian": False
+        "isVegetarian": False,
     },
     {
         "name": "CHAMPORADO",
@@ -205,14 +234,11 @@ FOOD_DATABASE = [
         "allergens": ["gluten", "nut"],
         "keywords": ["breakfast"],
         "isAvailable": True,
-        "isVegetarian": True
-    }
+        "isVegetarian": True,
+    },
 ]
 
-last_discussed_food = None
-last_discussed_allergen = None
 USER_ID_NUMBER = 12345678
-
 
 # dummy dummy lang toh para pag nag order si user di naman sya una diba diba and para lang if madaming ginawang order si user nadagdag tlga para cool 
 
@@ -256,19 +282,22 @@ def normalize_allergen(allergen_str):
 
 # we adding sa list of allergy ni user kasi we care we remember 
 
-def register_user_allergy(allergen_type, user_allergies):
-    global last_discussed_allergen
+def register_user_allergy(allergen_type, user_allergies=None):
+    if user_allergies is None:
+        user_allergies = []
+
     target = normalize_allergen(allergen_type)
     if target not in user_allergies:
         user_allergies.append(target)
-    last_discussed_allergen = target
 
     if len(user_allergies) == 1:
         allergies_str = user_allergies[0]
     else:
-        allergies_str = (", ".join(user_allergies[:-1]) + " and " + user_allergies[-1])
+        allergies_str = (
+            ", ".join(user_allergies[:-1]) + " and " + user_allergies[-1]
+        )
 
-    return f"Gotcha! You're allergic to {allergies_str}."
+    return f"Gotcha! You're allergic to {allergies_str}.", user_allergies
 
 # this is the asking and the checking for allergies
 
@@ -282,10 +311,11 @@ def add_allergies(allergen_type=None, user_allergies=None):
     print("What are you allergic to? [give only 1|none if none]")
     user_input = input("> ").strip()
 
-    if not user_input or user_input.lower() in [
-        "none"
-    ]:
-        return "No problem! Let me know if you need any menu recommendations."
+    if not user_input or user_input.lower() in ["none"]:
+        return (
+            "No problem! Let me know if you need any menu recommendations.",
+            user_allergies,
+        )
 
     parsed_intent = chatbot.respond(user_input)
     if parsed_intent and parsed_intent.strip().startswith("REGISTER_ALLERGY_"):
@@ -303,10 +333,8 @@ def get_available_menu():
         for item in FOOD_DATABASE
         if item.get("isAvailable")
     ]
-
     if not available_items:
         return "Sorry, no items are currently available on the menu."
-
     return (
         "Today's available menu:\n"
         + "\n".join(available_items)
@@ -317,17 +345,14 @@ def get_available_menu():
 
 def get_meal_type_menu(meal_type):
     meal_type = meal_type.lower().strip()
-
     matched_items = [
         f"• {item['name']} (₱{item['price']})"
         for item in FOOD_DATABASE
         if item.get("isAvailable")
         and meal_type in [k.lower() for k in item.get("keywords", [])]
     ]
-
     if not matched_items:
         return f"Sorry, no available options found for {meal_type} right now."
-
     return (
         f"Here are today's available {meal_type.title()} options:\n"
         + "\n".join(matched_items)
@@ -342,48 +367,41 @@ def get_category_menu(category):
     for item in FOOD_DATABASE:
         if not item.get("isAvailable"):
             continue
-
         keywords = [k.lower() for k in item.get("keywords", [])]
         allergens = [a.lower() for a in item.get("allergens", [])]
         name = item["name"].lower()
 
-        if category in ["pork"]:
-            if "pork" in keywords or "pork" in name:
-                matched_items.append(f"• {item['name']} (₱{item['price']})")
-
-        elif category in ["beef"]:
-            if "beef" in keywords or "beef" in name:
-                matched_items.append(f"• {item['name']} (₱{item['price']})")
-
-        elif category in ["chicken"]:
-            if "chicken" in keywords or "chicken" in name:
-                matched_items.append(f"• {item['name']} (₱{item['price']})")
-
-        elif category in ["meat", "meats"]:
-            if "meat" in keywords or any(
+        if category == "pork" and ("pork" in keywords or "pork" in name):
+            matched_items.append(f"• {item['name']} (₱{item['price']})")
+        elif category == "beef" and ("beef" in keywords or "beef" in name):
+            matched_items.append(f"• {item['name']} (₱{item['price']})")
+        elif category == "chicken" and (
+            "chicken" in keywords or "chicken" in name
+        ):
+            matched_items.append(f"• {item['name']} (₱{item['price']})")
+        elif category in ["meat", "meats"] and (
+            "meat" in keywords
+            or any(
                 m in name or m in keywords
                 for m in ["pork", "beef", "chicken", "sausage", "hotdog"]
-            ):
-                matched_items.append(f"• {item['name']} (₱{item['price']})")
-
-        elif category in ["fish", "seafood"]:
-            if (
-                "fish" in keywords
-                or "fish" in allergens
-                or "seafood" in allergens
-                or any(f in name for f in ["fish", "bangus", "salmon"])
-            ):
-                matched_items.append(f"• {item['name']} (₱{item['price']})")
-
-        elif category in ["vegetable", "vegetables", "veggie", "veggies"]:
-            if any(
-                v in name for v in ["ampalaya", "monggo", "tofu"]
-            ) or item.get("isVegetarian"):
-                matched_items.append(f"• {item['name']} (₱{item['price']})")
+            )
+        ):
+            matched_items.append(f"• {item['name']} (₱{item['price']})")
+        elif category in ["fish", "seafood"] and (
+            "fish" in keywords
+            or "fish" in allergens
+            or "seafood" in allergens
+            or any(f in name for f in ["fish", "bangus", "salmon"])
+        ):
+            matched_items.append(f"• {item['name']} (₱{item['price']})")
+        elif category in ["vegetable", "vegetables", "veggie", "veggies"] and (
+            any(v in name for v in ["ampalaya", "monggo", "tofu"])
+            or item.get("isVegetarian")
+        ):
+            matched_items.append(f"• {item['name']} (₱{item['price']})")
 
     if not matched_items:
         return f"Sorry, no available options found for '{category}'."
-
     return f"Here are today's available {category} options:\n" + "\n".join(
         matched_items
     )
@@ -397,53 +415,47 @@ def get_category_removed_menu(category):
     for item in FOOD_DATABASE:
         if not item.get("isAvailable"):
             continue
-
         keywords = [k.lower() for k in item.get("keywords", [])]
         allergens = [a.lower() for a in item.get("allergens", [])]
         name = item["name"].lower()
-
         is_excluded = False
 
-        if category in ["pork"]:
-            if "pork" in keywords or "pork" in name:
-                is_excluded = True
-
-        elif category in ["beef"]:
-            if "beef" in keywords or "beef" in name:
-                is_excluded = True
-
-        elif category in ["chicken"]:
-            if "chicken" in keywords or "chicken" in name:
-                is_excluded = True
-
-        elif category in ["meat", "meats"]:
-            if "meat" in keywords or any(
+        if category == "pork" and ("pork" in keywords or "pork" in name):
+            is_excluded = True
+        elif category == "beef" and ("beef" in keywords or "beef" in name):
+            is_excluded = True
+        elif category == "chicken" and (
+            "chicken" in keywords or "chicken" in name
+        ):
+            is_excluded = True
+        elif category in ["meat", "meats"] and (
+            "meat" in keywords
+            or any(
                 m in name or m in keywords
                 for m in ["pork", "beef", "chicken", "sausage", "hotdog"]
-            ):
-                is_excluded = True
-
-        elif category in ["fish", "seafood"]:
-            if (
-                "fish" in keywords
-                or "fish" in allergens
-                or "seafood" in allergens
-                or any(f in name for f in ["fish", "bangus", "salmon"])
-            ):
-                is_excluded = True
-
-        elif category in ["vegetable", "vegetables", "veggie", "veggies"]:
-            if any(
-                v in name for v in ["ampalaya", "monggo", "tofu"]
-            ) or item.get("isVegetarian"):
-                is_excluded = True
+            )
+        ):
+            is_excluded = True
+        elif category in ["fish", "seafood"] and (
+            "fish" in keywords
+            or "fish" in allergens
+            or "seafood" in allergens
+            or any(f in name for f in ["fish", "bangus", "salmon"])
+        ):
+            is_excluded = True
+        elif category in ["vegetable", "vegetables", "veggie", "veggies"] and (
+            any(v in name for v in ["ampalaya", "monggo", "tofu"])
+            or item.get("isVegetarian")
+        ):
+            is_excluded = True
 
         if not is_excluded:
             matched_items.append(f"• {item['name']} (₱{item['price']})")
 
     if not matched_items:
-        return f"Sorry, no available options found after excluding '{category}'."
-
+        return (
+            f"Sorry, no available options found after excluding '{category}'."
+        )
     return (
         f"Here are today's available options without {category}:\n"
         + "\n".join(matched_items)
@@ -453,22 +465,18 @@ def get_category_removed_menu(category):
 
 def get_food_with_allergen(allergen_type):
     target = normalize_allergen(allergen_type)
-    matched_items = []
-
-    for item in FOOD_DATABASE:
-        if not item.get("isAvailable"):
-            continue
-        
-        item_allergens = [a.lower() for a in item.get("allergens", [])]
-        
-        # Check if the target allergen is in the item's allergen list
-        if target in item_allergens:
-            matched_items.append(f"• {item['name']} (₱{item['price']})")
-
+    matched_items = [
+        f"• {item['name']} (₱{item['price']})"
+        for item in FOOD_DATABASE
+        if item.get("isAvailable")
+        and target in [a.lower() for a in item.get("allergens", [])]
+    ]
     if not matched_items:
         return f"Sorry, we don't have any available menu items containing '{allergen_type}'."
-
-    return f"Here are the available menu items containing {allergen_type}:\n" + "\n".join(matched_items)
+    return (
+        f"Here are the available menu items containing {allergen_type}:\n"
+        + "\n".join(matched_items)
+    )
 
 # from all the evil that surrounds me defend me
 
@@ -488,13 +496,10 @@ def get_allergen_safe_menu(allergen_type=None, user_allergies=None):
     for item in FOOD_DATABASE:
         if not item.get("isAvailable"):
             continue
-
         item_allergens = [a.lower() for a in item["allergens"]]
-        is_safe = not any(
+        if not any(
             user_allergy in item_allergens for user_allergy in user_allergies
-        )
-
-        if is_safe:
+        ):
             safe_items.append(f"• {item['name']}")
 
     allergies_label = ", ".join(user_allergies)
@@ -514,21 +519,17 @@ def get_vegetarian_menu():
         for item in FOOD_DATABASE
         if item.get("isAvailable") and item.get("isVegetarian", False)
     ]
-
     if not veg_items:
         return "Sorry, we don't have any vegetarian options currently available on the menu."
-
-    return "Here are today's available vegetarian-friendly options:\n" + "\n".join(
-        veg_items
+    return (
+        "Here are today's available vegetarian-friendly options:\n"
+        + "\n".join(veg_items)
     )
 
 # suggestion ! ! ! ! coolest part imo
 
 def get_food_suggestion(criteria_type, value=None):
-    available = [
-        item for item in FOOD_DATABASE if item.get("isAvailable")
-    ]
-
+    available = [item for item in FOOD_DATABASE if item.get("isAvailable")]
     if not available:
         return "Sorry, there are no items currently available on the menu."
 
@@ -552,41 +553,20 @@ def get_food_suggestion(criteria_type, value=None):
 
     elif criteria_type == "cheapest":
         chosen = min(available, key=lambda x: x["price"])
-        return (
-        f"I recommend {chosen['name']}. "
-        f"It's our cheapest available meal at ₱{chosen['price']}. "
-        f"It has {chosen['kcal']} kcal."
-    )
+        return f"I recommend {chosen['name']}. It's our cheapest available meal at ₱{chosen['price']}. It has {chosen['kcal']} kcal."
 
     elif criteria_type == "lowest_cal":
         chosen = min(available, key=lambda x: x["kcal"])
-        return (
-        f"I recommend {chosen['name']}. "
-        f"It has only {chosen['kcal']} kcal."
-    )
+        return f"I recommend {chosen['name']}. It has only {chosen['kcal']} kcal."
 
     elif criteria_type == "filling":
         chosen = max(available, key=lambda x: x["kcal"])
-        return (
-        f"If you're really hungry, try {chosen['name']}. "
-        f"It has {chosen['kcal']} kcal."
-    )
-    
-    elif criteria_type == "vegetarian":
-        filtered = [
-        item for item in available
-        if item["isVegetarian"]
-    ]
+        return f"If you're really hungry, try {chosen['name']}. It has {chosen['kcal']} kcal."
 
+    elif criteria_type == "vegetarian":
+        filtered = [item for item in available if item["isVegetarian"]]
         if not filtered:
             return "Sorry, no vegetarian meals are available."
-
-        chosen = random.choice(filtered)
-
-        return (
-            f"I recommend {chosen['name']}. "
-            f"It costs ₱{chosen['price']} and has {chosen['kcal']} kcal."
-    )
 
     elif criteria_type == "category" and value:
         target_cat = value.lower().strip()
@@ -595,29 +575,55 @@ def get_food_suggestion(criteria_type, value=None):
             name = item["name"].lower()
             allergens = [a.lower() for a in item.get("allergens", [])]
 
-            if target_cat in ["pork"] and ("pork" in keywords or "pork" in name):
+            if target_cat == "pork" and ("pork" in keywords or "pork" in name):
                 filtered.append(item)
-            elif target_cat in ["beef"] and ("beef" in keywords or "beef" in name):
+            elif target_cat == "beef" and (
+                "beef" in keywords or "beef" in name
+            ):
                 filtered.append(item)
-            elif target_cat in ["chicken"] and ("chicken" in keywords or "chicken" in name):
+            elif target_cat == "chicken" and (
+                "chicken" in keywords or "chicken" in name
+            ):
                 filtered.append(item)
-            elif target_cat in ["meat", "meats"] and ("meat" in keywords or any(m in name or m in keywords for m in ["pork", "beef", "chicken", "sausage", "hotdog"])):
+            elif target_cat in ["meat", "meats"] and (
+                "meat" in keywords
+                or any(
+                    m in name or m in keywords
+                    for m in ["pork", "beef", "chicken", "sausage", "hotdog"]
+                )
+            ):
                 filtered.append(item)
-            elif target_cat in ["fish", "seafood"] and ("fish" in keywords or "fish" in allergens or "seafood" in allergens or any(f in name for f in ["fish", "bangus", "salmon"])):
+            elif target_cat in ["fish", "seafood"] and (
+                "fish" in keywords
+                or "fish" in allergens
+                or "seafood" in allergens
+                or any(f in name for f in ["fish", "bangus", "salmon"])
+            ):
                 filtered.append(item)
-            elif target_cat in ["vegetable", "veggie"] and (any(v in name for v in ["ampalaya", "monggo", "tofu"]) or item.get("isVegetarian")):
+            elif target_cat in ["vegetable", "veggie"] and (
+                any(v in name for v in ["ampalaya", "monggo", "tofu"])
+                or item.get("isVegetarian")
+            ):
                 filtered.append(item)
 
     elif criteria_type == "without_category" and value:
         target_cat = value.lower().strip()
         db_allergen_map = {
-            "egg": "egg", "eggs": "egg",
-            "soy": "soybean", "soya": "soybean", "soybean": "soybean", "soybeans": "soybean",
-            "dairy": "milk", "milk": "milk",
-            "seafood": "seafood", "seafoods": "seafood",
-            "crustacean": "crustacean", "crustaceans": "crustaceans",
-            "nut": "nut", "nuts": "nut",
-            "wheat": "wheat", "gluten": "gluten"
+            "egg": "egg",
+            "eggs": "egg",
+            "soy": "soybean",
+            "soya": "soybean",
+            "soybean": "soybean",
+            "dairy": "milk",
+            "milk": "milk",
+            "seafood": "seafood",
+            "seafoods": "seafood",
+            "crustacean": "crustacean",
+            "crustaceans": "crustaceans",
+            "nut": "nut",
+            "nuts": "nut",
+            "wheat": "wheat",
+            "gluten": "gluten",
         }
         mapped_allergen = db_allergen_map.get(target_cat, target_cat)
 
@@ -625,20 +631,39 @@ def get_food_suggestion(criteria_type, value=None):
             keywords = [k.lower() for k in item.get("keywords", [])]
             name = item["name"].lower()
             allergens = [a.lower() for a in item.get("allergens", [])]
-
             is_excluded = False
 
-            if target_cat in ["pork"] and ("pork" in keywords or "pork" in name):
+            if target_cat == "pork" and ("pork" in keywords or "pork" in name):
                 is_excluded = True
-            elif target_cat in ["beef"] and ("beef" in keywords or "beef" in name):
+            elif target_cat == "beef" and ("beef" in keywords or "beef" in name):
                 is_excluded = True
-            elif target_cat in ["chicken"] and ("chicken" in keywords or "chicken" in name or "chicken" in allergens):
+            elif target_cat == "chicken" and (
+                "chicken" in keywords
+                or "chicken" in name
+                or "chicken" in allergens
+            ):
                 is_excluded = True
-            elif target_cat in ["meat", "meats"] and ("meat" in keywords or any(m in name or m in keywords for m in ["pork", "beef", "chicken", "sausage", "hotdog"])):
+            elif target_cat in ["meat", "meats"] and (
+                "meat" in keywords
+                or any(
+                    m in name or m in keywords
+                    for m in ["pork", "beef", "chicken", "sausage", "hotdog"]
+                )
+            ):
                 is_excluded = True
-            elif target_cat in ["fish", "seafood", "seafoods"] and ("fish" in keywords or "fish" in allergens or "seafood" in allergens or "crustaceans" in allergens or "crustacean" in allergens or any(f in name for f in ["fish", "bangus", "salmon"])):
+            elif target_cat in ["fish", "seafood", "seafoods"] and (
+                "fish" in keywords
+                or "fish" in allergens
+                or "seafood" in allergens
+                or "crustaceans" in allergens
+                or "crustacean" in allergens
+                or any(f in name for f in ["fish", "bangus", "salmon"])
+            ):
                 is_excluded = True
-            elif target_cat in ["vegetable", "veggie", "veggies"] and (any(v in name for v in ["ampalaya", "monggo", "tofu"]) or item.get("isVegetarian")):
+            elif target_cat in ["vegetable", "veggie", "veggies"] and (
+                any(v in name for v in ["ampalaya", "monggo", "tofu"])
+                or item.get("isVegetarian")
+            ):
                 is_excluded = True
             elif mapped_allergen in allergens or target_cat in allergens:
                 is_excluded = True
@@ -653,7 +678,6 @@ def get_food_suggestion(criteria_type, value=None):
         allergen_type = value.lower().strip()
         allergen_map = {"eggs": "egg", "soy": "soybean", "dairy": "milk"}
         target_allergen = allergen_map.get(allergen_type, allergen_type)
-
         filtered = [
             item
             for item in available
@@ -670,113 +694,105 @@ def get_food_suggestion(criteria_type, value=None):
 
 # basically more info on da food
 
-def get_food_description(food_name):
-    global last_discussed_food
-    if food_name.lower().strip() in ["it"]:
+def get_food_description(food_name, last_discussed_food=None):
+    if food_name.lower().strip() == "it":
         if not last_discussed_food:
-            return "What food are you referring to?"
+            return "What food are you referring to?", last_discussed_food
         food_name = last_discussed_food
 
     food_name_clean = food_name.strip().upper()
-
     for item in FOOD_DATABASE:
         if food_name_clean in item["name"].upper():
-            last_discussed_food = item["name"]
             desc = item.get("description")
-            if desc:
-                return f"{item['name']} - {desc}"
-            else:
-                return f"{item['name']} is on our menu, but has no detailed description."
+            msg = (
+                f"{item['name']} - {desc}"
+                if desc
+                else f"{item['name']} is on our menu, but has no detailed description."
+            )
+            return msg, item["name"]
 
-    return f"Sorry, I couldn't find '{food_name.title()}' on our menu."
+    return (
+        f"Sorry, I couldn't find '{food_name.title()}' on our menu.",
+        last_discussed_food,
+    )
 
 # get price 
 
-def get_food_price(food_name):
-    global last_discussed_food
-    if food_name.lower().strip() in ["it"]:
+def get_food_price(food_name, last_discussed_food=None):
+    if food_name.lower().strip() == "it":
         if not last_discussed_food:
-            return "Which dish are you asking the price for?"
+            return (
+                "Which dish are you asking the price for?",
+                last_discussed_food,
+            )
         food_name = last_discussed_food
 
     food_name_clean = food_name.strip().upper()
-
     for item in FOOD_DATABASE:
         if food_name_clean in item["name"].upper():
-            last_discussed_food = item["name"]
-            return f"{item['name']} costs ₱{item['price']} alone and ₱{item['price']+15} with white rice."
+            return (
+                f"{item['name']} costs ₱{item['price']} alone and ₱{item['price']+15} with white rice.",
+                item["name"],
+            )
 
-    return f"Sorry, I couldn't find '{food_name.title()}' on our menu."
+    return (
+        f"Sorry, I couldn't find '{food_name.title()}' on our menu.",
+        last_discussed_food,
+    )
 
 # get calories kcalories kcal
 
-def get_food_calories(food_name):
-    global last_discussed_food
-
-    if food_name.lower().strip() in ["it"]:
+def get_food_calories(food_name, last_discussed_food=None):
+    if food_name.lower().strip() == "it":
         if not last_discussed_food:
-            return "Which dish are you asking the calorie count for?"
+            return (
+                "Which dish are you asking the calorie count for?",
+                last_discussed_food,
+            )
         food_name = last_discussed_food
 
     food_name_clean = food_name.strip().upper()
-
     for item in FOOD_DATABASE:
         if food_name_clean in item["name"].upper():
-            last_discussed_food = item["name"]
-            return f"{item['name']} has {item['kcal']} kcal."
+            return f"{item['name']} has {item['kcal']} kcal.", item["name"]
 
-    return f"Sorry, I couldn't find '{food_name.title()}' on our menu."
+    return (
+        f"Sorry, I couldn't find '{food_name.title()}' on our menu.",
+        last_discussed_food,
+    )
 
 # if user asking if certain menu item has this allergen
 
-def check_item_allergen(food_name, allergen_type):
-    global last_discussed_food, last_discussed_allergen
-
-    if food_name.lower().strip() in ["it"]:
+def check_item_allergen(food_name, allergen_type, last_discussed_food=None):
+    if food_name.lower().strip() == "it":
         if not last_discussed_food:
-            return "Which food item are you referring to?"
+            return "Which food item are you referring to?", last_discussed_food
         food_name = last_discussed_food
 
-    if allergen_type.lower().strip() in ["it", "that"]:
-        if not last_discussed_allergen:
-            return "Which allergen are you asking about?"
-        allergen_type = last_discussed_allergen
-
     food_name_clean = food_name.strip().upper()
-    allergen_type_clean = allergen_type.lower().strip()
-
-    allergen_map = {
-        "eggs": "egg",
-        "soy": "soybean",
-        "dairy": "milk",
-        "nuts": "nut",
-    }
-    target_allergen = allergen_map.get(
-        allergen_type_clean, allergen_type_clean
-    )
+    target_allergen = normalize_allergen(allergen_type)
 
     for item in FOOD_DATABASE:
         if food_name_clean in item["name"].upper():
-            last_discussed_food = item["name"]
-            last_discussed_allergen = target_allergen
-
             item_allergens = [a.lower() for a in item["allergens"]]
-
             if target_allergen in item_allergens:
-                return f"Yes, {item['name']} contains **{target_allergen}**. (Listed allergens: {', '.join(item['allergens'])})"
+                msg = f"Yes, {item['name']} contains **{target_allergen}**. (Listed allergens: {', '.join(item['allergens'])})"
             else:
-                if item["allergens"]:
-                    return f"No, {item['name']} does NOT contain {target_allergen}. (Listed allergens: {', '.join(item['allergens'])})"
-                else:
-                    return f"No, {item['name']} has no declared allergens."
+                msg = (
+                    f"No, {item['name']} does NOT contain {target_allergen}."
+                    if item["allergens"]
+                    else f"No, {item['name']} has no declared allergens."
+                )
+            return msg, item["name"]
 
-    return f"Sorry, I couldn't find '{food_name.title()}' on our menu."
+    return (
+        f"Sorry, I couldn't find '{food_name.title()}' on our menu.",
+        last_discussed_food,
+    )
 
 # making order 
 
 def process_order_creation(count_str, food_query):
-    global orders_queue, last_discussed_food
-
     try:
         count = int(count_str)
         if count <= 0:
@@ -785,27 +801,23 @@ def process_order_creation(count_str, food_query):
         return "Invalid order quantity."
 
     food_query_clean = food_query.strip().upper()
-    selected_item = None
-
-    for item in FOOD_DATABASE:
-        if food_query_clean in item["name"].upper():
-            selected_item = item
-            break
+    selected_item = next(
+        (
+            item
+            for item in FOOD_DATABASE
+            if food_query_clean in item["name"].upper()
+        ),
+        None,
+    )
 
     if not selected_item:
         return f"Sorry, we couldn't find '{food_query.title()}' on our menu."
-
     if not selected_item.get("isAvailable"):
-        return (
-            f"Sorry, {selected_item['name']} is currently not available."
-        )
-
-    last_discussed_food = selected_item["name"]
+        return f"Sorry, {selected_item['name']} is currently not available."
 
     print(
         f"Would you like to add rice to your {count}x {selected_item['name']} for an additional ₱15 per item? [y/n]"
     )
-
     with_rice = False
     while True:
         rice_choice = input("> ").strip().lower()
@@ -820,8 +832,8 @@ def process_order_creation(count_str, food_query):
 
     unit_price = selected_item["price"] + (15 if with_rice else 0)
     total_price = unit_price * count
-    # we can change the format of this para mas bagay sa chatbot but thats basically what we need
     rice_str = "with rice" if with_rice else "without rice"
+
     print("\n--- ORDER SUMMARY ---")
     print(f"ID Number : {USER_ID_NUMBER}")
     print(f"Item      : {count}x {selected_item['name']} ({rice_str})")
@@ -834,22 +846,21 @@ def process_order_creation(count_str, food_query):
         action = input("> ").strip().upper()
         if action == "CONFIRM":
             order_num = len(orders_queue) + 1
-            new_order = {
-                "id_number": USER_ID_NUMBER,
-                "food_name": selected_item["name"],
-                "count": count,
-                "with_rice": with_rice,
-                "order_number": order_num,
-            }
-            orders_queue.append(new_order)
-            return (
-                f"Order confirmed! Your order number is #{order_num}. "
-                f"You are number {order_num} in queue."
+            orders_queue.append(
+                {
+                    "id_number": USER_ID_NUMBER,
+                    "food_name": selected_item["name"],
+                    "count": count,
+                    "with_rice": with_rice,
+                    "order_number": order_num,
+                }
             )
+            return f"Order confirmed! Your order number is #{order_num}. You are number {order_num} in queue."
         elif action == "CANCEL":
             return "Order process canceled."
         else:
             print("Please type CONFIRM or CANCEL.")
+
 
 # regex
 
@@ -1245,8 +1256,16 @@ pairs = [
 chatbot = Chat(pairs, reflections)
 
 if __name__ == "__main__":
-    user_allergies = []
-    print("Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions! \n- What's on the menu?\n- What can I get if I have seafood allergy?\n- Suggest anything without pork. \n- How to place order?")
+    local_user_allergies = []
+    local_last_discussed_food = None
+
+    print(
+        "Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions! \n"
+        "- What's on the menu?\n"
+        "- What can I get if I have seafood allergy?\n"
+        "- Suggest anything without pork. \n"
+        "- How to place order?"
+    )
 
     while True:
         try:
@@ -1291,7 +1310,11 @@ if __name__ == "__main__":
 
                 elif clean_response.startswith("ALLERGEN_"):
                     allergen = clean_response.replace("ALLERGEN_", "")
-                    print(get_allergen_safe_menu(allergen))
+                    print(
+                        get_allergen_safe_menu(
+                            allergen, local_user_allergies
+                        )
+                    )
 
                 elif clean_response.startswith("SUGGEST_BUDGET_"):
                     amount = clean_response.replace("SUGGEST_BUDGET_", "")
@@ -1324,21 +1347,33 @@ if __name__ == "__main__":
 
                 elif clean_response.startswith("INFO_"):
                     food = clean_response.replace("INFO_", "")
-                    print(get_food_description(food))
+                    msg, local_last_discussed_food = get_food_description(
+                        food, local_last_discussed_food
+                    )
+                    print(msg)
 
                 elif clean_response.startswith("PRICE_"):
                     food = clean_response.replace("PRICE_", "")
-                    print(get_food_price(food))
+                    msg, local_last_discussed_food = get_food_price(
+                        food, local_last_discussed_food
+                    )
+                    print(msg)
 
                 elif clean_response.startswith("CALORIES_"):
                     food = clean_response.replace("CALORIES_", "")
-                    print(get_food_calories(food))
+                    msg, local_last_discussed_food = get_food_calories(
+                        food, local_last_discussed_food
+                    )
+                    print(msg)
 
                 elif clean_response.startswith("CHECK_ALLERGEN_"):
                     payload = clean_response.replace("CHECK_ALLERGEN_", "")
                     if "|" in payload:
                         food_item, allergen = payload.split("|", 1)
-                        print(check_item_allergen(food_item, allergen))
+                        msg, local_last_discussed_food = check_item_allergen(
+                            food_item, allergen, local_last_discussed_food
+                        )
+                        print(msg)
                     else:
                         print("Could not process allergen check query.")
 
@@ -1353,11 +1388,16 @@ if __name__ == "__main__":
                         print(process_order_creation(count_str, food_query))
 
                 elif clean_response == "IDENTIFY_ALLERGY":
-                    response_msg = add_allergies(user_allergies=user_allergies)
-                    print(response_msg)
-
-                    if "Gotcha!" in response_msg:
-                        print(get_allergen_safe_menu(user_allergies=user_allergies))
+                    msg, local_user_allergies = add_allergies(
+                        user_allergies=local_user_allergies
+                    )
+                    print(msg)
+                    if "Gotcha!" in msg:
+                        print(
+                            get_allergen_safe_menu(
+                                user_allergies=local_user_allergies
+                            )
+                        )
                 else:
                     print(response)
             else:
