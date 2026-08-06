@@ -24,7 +24,7 @@ from ChatBot import (
 # --- 1. Page Configuration & Custom DLSU Green Header ---
 st.set_page_config(page_title="ArcherEats", page_icon="🏹", layout="centered")
 
-# Custom CSS for DLSU Green branding matching your reference image
+# Custom CSS for DLSU Green branding
 st.markdown("""
     <style>
     /* Dark Green Header Bar */
@@ -184,6 +184,10 @@ if user_input := st.chat_input("Ask ArcherEats..."):
             bot_text = "Please specify what you are allergic to (e.g., 'I am allergic to eggs')."
         else:
             bot_text = clean_response
+
+    # --- FIX: Convert single newlines to Markdown line breaks ---
+    # Markdown requires two spaces before a newline to render a line break.
+    bot_text = str(bot_text).replace('\n', '  \n')
 
     # Render bot message
     st.session_state.messages.append({"role": "assistant", "content": bot_text})
