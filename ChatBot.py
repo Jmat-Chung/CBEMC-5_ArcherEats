@@ -882,7 +882,7 @@ pairs = [
     # dis is creating order na ilalagay sa napakacool na dummy queue YIPEE
 
     [
-        r"(.*)\b(how long will|how long before|my turn|queue|line|wait time|waiting time|how long is the line|how long is the queue|when will my order|when can i get my order)\b(.*)",
+        r"(.*)\b(can i pick up|soon|arrive|how long will|how long before|my turn|queue|line|wait time|waiting time|how long is the line|how long is the queue|when will my order|when can i get my order)\b(.*)",
         ["DISPLAY_QUEUE"]
     ],
 
@@ -1146,7 +1146,7 @@ pairs = [
     [
         r"(.*)(order)(.*)",
         [
-            "To order, please head to the lower left corner and select your meal from there! I could also order for you! Just say what you want to order and I'll do it for you (e.g., '1, Roast Pork')"
+            "To order, please head to the lower left corner and select your meal from there! I could also order for you! Just say what you want to order and I'll do it for you (e.g., '1 Roast Pork')"
         ],
     ],
 
@@ -1345,7 +1345,7 @@ pairs = [
             "• Menu: 'What's on the menu?' or 'Show me breakfast options'\n"
             "• Food Info: 'Tell me about Braised Beef' or 'Price of Tofu Sisig'\n"
             "• Allergies: 'I am allergic to gluten' or 'Does Pork BBQ contain soy?'\n"
-            "• Ordering: '1, Roast Pork'"
+            "• Ordering: '1 Roast Pork'"
         ],
     ],
 
