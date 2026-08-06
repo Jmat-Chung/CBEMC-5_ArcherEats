@@ -858,6 +858,21 @@ def process_order_creation(count_str, food_query):
         else:
             print("Please type CONFIRM or CANCEL.")
 
+# show da queue for da impationnt pipols
+
+def get_queue_display():
+    if not orders_queue:
+        return "The queue is currently empty! No orders waiting."
+    queue_numbers = [
+        f"#{order['order_number']}" for order in orders_queue
+    ]
+
+    queue_chain = " --- ".join(queue_numbers)
+
+    return (
+        f"Current Orders in Queue ({len(orders_queue)} Total):\n\n"
+        f"{queue_chain}"
+    )
 
 # regex
 
@@ -865,6 +880,16 @@ pairs = [
     # eto dapat sa taas para di magconflict sa iba
 
     # dis is creating order na ilalagay sa napakacool na dummy queue YIPEE
+
+    [
+        r"(.*)\b(how long will|how long before|my turn|queue|line|wait time|waiting time|how long is the line|how long is the queue|when will my order|when can i get my order)\b(.*)",
+        ["DISPLAY_QUEUE"]
+    ],
+
+    [
+        r"^\s*(status|situation)\s*,\s*(canteen|cafeteria)\s*$",
+        ["CREATE_ORDER_%1|%2"],
+    ],
 
     [
         r"^\s*(\d+)\s*,\s*(.+)\s*$",
@@ -985,6 +1010,11 @@ pairs = [
     [
         r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero)\b.*\b(meat|meats)\b.*",
         ["WITHOUT_meat"]
+    ],
+
+    [
+        r".*\b(?:i have|i\'m allergic to|im allergic to|i am allergic to|i can\'t have|i cant have|cannot eat|allergic to)\s+(?:an?\s+)?([a-zA-Z]+)(?:\s+allergy)?.*",
+        ["REGISTER_ALLERGY_%1"],
     ],
 
     # without allergens
@@ -1240,6 +1270,59 @@ pairs = [
         ],
     ],
 
+# GOGOGOGO SPAM SPAM SPAM ERROR HANDLING SUGGESTION RAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH
+    
+    [
+        r".*\b(cost|price|cheap|expensive|money|peso|pesos|php|pay|how much|price|budget)\b.*",
+        [
+            "Looking for pricing details? You can ask me:\n"
+            "• 'How much is Roast Pork?'\n"
+            "• 'Show me meals under 100 pesos'\n"
+            "• 'What is the cheapest meal?'"
+        ],
+    ],
+
+    [
+        r".*\b(contain|contains|ingredient|ingredients|inside|recipe|allergy|allergies|allergic|safe|eat|food|dish|meal|can eat|cant eat|can\'t eat|shouldn\'t eat|shouldnt eat)\b.*",
+        [
+            "Trying to check ingredients or find a safe dish? Try asking:\n"
+            "• 'Does Fried Chicken contain eggs?'\n"
+            "• 'I am allergic to seafood'\n"
+            "• 'Show me food with dairy'"
+        ],
+    ],
+
+    [
+        r".*\b(calorie|calories|kcal|diet|heavy|light|weight|fat|fit|bulk|healthy)\b.*",
+        [
+            "Interested in calorie and nutritional counts? You can ask:\n"
+            "• 'How many calories are in Tofu Sisig?'\n"
+            "• 'Suggest a low calorie meal'\n"
+            "• 'What is the most filling option?'"
+        ],
+    ],
+
+    [
+        r".*\b(hungry|eat|food|lunch|dinner|breakfast|recommend|suggest|want|find|search|options|available)\b.*",
+        [
+            "Not sure what to choose? Here are some ways you can ask for recommendations:\n"
+            "• 'Suggest a pork dish'\n"
+            "• 'Show me lunch options'\n"
+            "• 'Recommend something vegetarian'\n"
+            "• 'Suggest something without chicken'"
+        ],
+    ],
+
+    [
+        r".*\b(order|buy|get|purchase|add|queue|tray)\b.*",
+        [
+            "Want to place an order? You can easily order by typing the quantity and item name:\n"
+            "• '1 Roast Pork'\n"
+            "• '2 Fried Chicken'\n"
+            "Or ask: 'How do I place an order?'"
+        ],
+    ],
+
     [
         r"(bye|goodbye|exit|quit)",
         [
@@ -1248,6 +1331,27 @@ pairs = [
         ],
     ],
     [r"(.*)(thank|thanks)(.*)", ["You're welcome! Enjoy your meal!"]],
+
+    [
+        r"(.*)(shin|shintaroh|nomoto|emperor)(.*)",
+        ["shin did not get enough sleep for this"]
+    ],
+
+    [
+        r".*",
+        [
+            "I'm not quite sure what you're looking for, but I can help you with menu info, allergies, and recommendations!\n\n"
+            "Try phrasing your query like this:\n"
+            "• Menu: 'What's on the menu?' or 'Show me breakfast options'\n"
+            "• Food Info: 'Tell me about Braised Beef' or 'Price of Tofu Sisig'\n"
+            "• Allergies: 'I am allergic to gluten' or 'Does Pork BBQ contain soy?'\n"
+            "• Ordering: '1, Roast Pork'"
+        ],
+    ],
+
+
+
+    
 ]
 
 chatbot = Chat(pairs, reflections)
@@ -1284,6 +1388,18 @@ if __name__ == "__main__":
 
                 elif clean_response == "FETCH_VEGETARIAN":
                     print(get_vegetarian_menu())
+
+                elif clean_response.startswith("REGISTER_ALLERGY_"):
+                    allergen = clean_response.replace("REGISTER_ALLERGY_", "")
+                    msg, local_user_allergies = register_user_allergy(
+                        allergen, local_user_allergies
+                    )
+                    print(msg)
+                    print(
+                        get_allergen_safe_menu(
+                            user_allergies=local_user_allergies
+                        )
+                    )
 
                 elif clean_response.startswith("CATEGORY_"):
                     category = clean_response.replace("CATEGORY_", "")
@@ -1377,6 +1493,9 @@ if __name__ == "__main__":
                 elif clean_response.startswith("MEAL_"):
                     meal = clean_response.replace("MEAL_", "")
                     print(get_meal_type_menu(meal))
+
+                elif clean_response == "DISPLAY_QUEUE":
+                    print(get_queue_display())
 
                 elif clean_response.startswith("CREATE_ORDER_"):
                     payload = clean_response.replace("CREATE_ORDER_", "")

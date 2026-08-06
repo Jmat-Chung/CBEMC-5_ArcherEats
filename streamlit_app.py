@@ -26,7 +26,8 @@ from ChatBot import (
     get_food_description,
     get_food_price,
     get_food_calories,
-    check_item_allergen
+    check_item_allergen,
+    get_queue_display
 )
 
 st.set_page_config(page_title="ArcherEats", page_icon="🏹", layout="centered")
@@ -157,6 +158,8 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                 bot_text = get_available_menu()
             elif clean_response == "FETCH_VEGETARIAN":
                 bot_text = get_vegetarian_menu()
+            elif clean_response == "DISPLAY_QUEUE":
+                bot_text = get_queue_display()
             elif clean_response.startswith("CATEGORY_"):
                 bot_text = get_category_menu(clean_response.replace("CATEGORY_", ""))
             elif clean_response.startswith("WITHOUT_"):
@@ -164,6 +167,41 @@ if user_input := st.chat_input("Ask ArcherEats..."):
             elif clean_response.startswith("ALLERGEN_"):
                 allergen = clean_response.replace("ALLERGEN_", "")
                 bot_text = get_allergen_safe_menu(allergen, st.session_state.user_allergies)
+            elif clean_response.startswith("REGISTER_ALLERGY_"):
+                allergen = clean_response.replace("REGISTER_ALLERGY_", "")
+                confirm_msg, st.session_state.user_allergies = register_user_allergy(
+                    allergen, st.session_state.user_allergies
+                )
+                safe_menu = get_allergen_safe_menu(
+                    user_allergies=st.session_state.user_allergies
+                )
+                bot_text = f"{confirm_msg}\n\n{safe_menu}"
+            elif clean_response.startswith("SUGGEST_CATEGORY_"):
+                cat = clean_response.replace("SUGGEST_CATEGORY_", "")
+                bot_text = get_food_suggestion("category", cat)
+            elif clean_response.startswith("SUGGEST_WITHOUT_"):
+                cat = clean_response.replace("SUGGEST_WITHOUT_", "")
+                bot_text = get_food_suggestion("without_category", cat)
+            elif clean_response.startswith("SUGGEST_BUDGET_"):
+                amount = clean_response.replace("SUGGEST_BUDGET_", "")
+                bot_text = get_food_suggestion("budget", amount)
+            elif clean_response.startswith("SUGGEST_ALLERGEN_"):
+                allergen = clean_response.replace("SUGGEST_ALLERGEN_", "")
+                bot_text = get_food_suggestion("allergen", allergen)
+            elif clean_response == "SUGGEST_HIGHCAL":
+                bot_text = get_food_suggestion("high_cal")
+            elif clean_response == "SUGGEST_LOWCAL":
+                bot_text = get_food_suggestion("low_cal")
+            elif clean_response == "SUGGEST_GENERAL":
+                bot_text = get_food_suggestion("general")
+            elif clean_response == "SUGGEST_CHEAPEST":
+                bot_text = get_food_suggestion("cheapest")
+            elif clean_response == "SUGGEST_LOWESTCAL":
+                bot_text = get_food_suggestion("lowest_cal")
+            elif clean_response == "SUGGEST_FILLING":
+                bot_text = get_food_suggestion("filling")
+            elif clean_response == "SUGGEST_VEGETARIAN":
+                bot_text = get_food_suggestion("vegetarian")
             elif clean_response.startswith("INFO_"):
                 food = clean_response.replace("INFO_", "")
                 bot_text, st.session_state.last_discussed_food = (
@@ -207,7 +245,13 @@ if user_input := st.chat_input("Ask ArcherEats..."):
             else:
                 bot_text = clean_response
         else:
-            bot_text = "I understand the topic, but could you please rephrase?"
+            bot_text = (
+                "I didn't quite catch that. Here are a few ways you can ask me:\n\n"
+                "• **Menu**: *'What's on the menu?'*\n"
+                "• **Allergies**: *'I have a soy allergy'*\n"
+                "• **Suggestions**: *'Suggest a meal under 100 pesos'*\n"
+                "• **Order**: *'1 Roast Pork'*"
+            )
 
     bot_text = str(bot_text).replace('\n', '  \n')
     st.session_state.messages.append({"role": "assistant", "content": bot_text})
