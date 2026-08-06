@@ -716,7 +716,6 @@ def get_food_description(food_name, last_discussed_food=None):
         last_discussed_food,
     )
 
-# get price 
 
 def get_food_price(food_name, last_discussed_food=None):
     if food_name.lower().strip() == "it":
@@ -740,7 +739,6 @@ def get_food_price(food_name, last_discussed_food=None):
         last_discussed_food,
     )
 
-# get calories kcalories kcal
 
 def get_food_calories(food_name, last_discussed_food=None):
     if food_name.lower().strip() == "it":
@@ -761,7 +759,6 @@ def get_food_calories(food_name, last_discussed_food=None):
         last_discussed_food,
     )
 
-# if user asking if certain menu item has this allergen
 
 def check_item_allergen(food_name, allergen_type, last_discussed_food=None):
     if food_name.lower().strip() == "it":

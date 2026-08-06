@@ -166,18 +166,37 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                 bot_text = get_allergen_safe_menu(allergen, st.session_state.user_allergies)
             elif clean_response.startswith("INFO_"):
                 food = clean_response.replace("INFO_", "")
-                bot_text, st.session_state.last_discussed_food = get_food_description(food, st.session_state.last_discussed_food)
+                bot_text, st.session_state.last_discussed_food = (
+                    get_food_description(
+                        food, st.session_state.last_discussed_food
+                    )
+                )
+
             elif clean_response.startswith("PRICE_"):
                 food = clean_response.replace("PRICE_", "")
-                bot_text, st.session_state.last_discussed_food = get_food_price(food, st.session_state.last_discussed_food)
+                bot_text, st.session_state.last_discussed_food = (
+                    get_food_price(food, st.session_state.last_discussed_food)
+                )
+
             elif clean_response.startswith("CALORIES_"):
                 food = clean_response.replace("CALORIES_", "")
-                bot_text, st.session_state.last_discussed_food = get_food_calories(food, st.session_state.last_discussed_food)
+                bot_text, st.session_state.last_discussed_food = (
+                    get_food_calories(
+                        food, st.session_state.last_discussed_food
+                    )
+                )
+
             elif clean_response.startswith("CHECK_ALLERGEN_"):
                 payload = clean_response.replace("CHECK_ALLERGEN_", "")
                 if "|" in payload:
                     food_item, allergen = payload.split("|", 1)
-                    bot_text, st.session_state.last_discussed_food = check_item_allergen(food_item, allergen, st.session_state.last_discussed_food)
+                    bot_text, st.session_state.last_discussed_food = (
+                        check_item_allergen(
+                            food_item,
+                            allergen,
+                            st.session_state.last_discussed_food,
+                        )
+                    )
             elif clean_response == "IDENTIFY_ALLERGY":
                 bot_text = "Please state your allergy (e.g., 'I am allergic to eggs')."
             elif clean_response.startswith("CREATE_ORDER_"):
