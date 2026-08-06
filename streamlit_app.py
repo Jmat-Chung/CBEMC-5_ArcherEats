@@ -204,6 +204,8 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                     bot_text = get_food_with_allergen(clean_response.replace("FOOD_WITH_ALLERGEN_", ""))
                 elif clean_response.startswith("WITHOUT_"):
                     bot_text = get_category_removed_menu(clean_response.replace("WITHOUT_", ""))
+                elif clean_response.startswith("SUGGEST_WITHOUT_"):
+                    bot_text = get_food_suggestion("without_category", clean_response.replace("SUGGEST_WITHOUT_", ""))
                 elif clean_response.startswith("SUGGEST_CATEGORY_"):
                     bot_text = get_food_suggestion("category", clean_response.replace("SUGGEST_CATEGORY_", ""))
                 elif clean_response.startswith("ALLERGEN_"):

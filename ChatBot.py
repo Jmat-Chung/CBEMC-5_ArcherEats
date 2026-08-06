@@ -29,7 +29,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "ROAST PORK",
-        "description": "Oven-roasted pork with savory drippings",
+        "description": "Oven-roasted pork with savory drippings.",
         "price": 95,
         "kcal": 217,
         "allergens": ["gluten", "celery", "mustard", "soybean", "sulphite"],
@@ -39,7 +39,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "BREADED FISH FILLET",
-        "description": "Crispy breaded fish fillet",
+        "description": "Crispy breaded fish fillet.",
         "price": 90,
         "kcal": 235,
         "allergens": ["seafood", "egg", "gluten"],
@@ -49,7 +49,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "DAING NA BANGUS",
-        "description": "Marinated milkfish fried to golden perfection",
+        "description": "Marinated milkfish fried to golden perfection.",
         "price": 85,
         "kcal": 131,
         "allergens": ["soybean", "fish", "gluten", "seafood"],
@@ -59,7 +59,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "BRAISED BEEF",
-        "description": "Slow-braised beef in rich sauce",
+        "description": "Slow-braised beef in rich sauce.",
         "price": 105,
         "kcal": 218,
         "allergens": ["soybean", "gluten", "sesame", "celery", "sulphite", "milk", "mustard"],
@@ -69,7 +69,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "FRIED EGG",
-        "description": "",
+        "description": "Freshly fried egg with a cooked yolk.",
         "price": 17,
         "kcal": 131,
         "allergens": ["egg"],
@@ -79,7 +79,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "FRIED HUNGARIAN SAUSAGE",
-        "description": "",
+        "description": "Pan-fried Hungarian sausage.",
         "price": 75,
         "kcal": 100,
         "allergens": ["gluten", "soybean"],
@@ -89,7 +89,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "FRIED HOTDOG",
-        "description": "",
+        "description": "Pan-fried hotdog.",
         "price": 45,
         "kcal": 89,
         "allergens": ["soybean", "milk", "mustard", "gluten", "sulphite"],
@@ -99,7 +99,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "PORK BBQ",
-        "description": "",
+        "description": "Grilled pork on a stick with a barbecue glaze.",
         "price": 100,
         "kcal": 195,
         "allergens": ["soybean", "mustard", "gluten", "sulphite"],
@@ -109,7 +109,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "PORK MENUDO",
-        "description": "",
+        "description": "Pork cooked in tomato sauce with potatoes and carrots.",
         "price": 85,
         "kcal": 209,
         "allergens": ["soybean", "milk", "crustaceans", "celery", "sulphite"],
@@ -119,7 +119,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "SINIGANG NA SALMON",
-        "description": "",
+        "description": "Salmon in a sour tamarind soup with vegetables.",
         "price": 140,
         "kcal": 165,
         "allergens": ["gluten", "fish", "soybean", "crustacean", "celery", "egg", "milk", "seafood"],
@@ -129,7 +129,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "TOFU SISIG",
-        "description": "",
+        "description": "Fried tofu mixed with onions and sisig seasoning.",
         "price": 85,
         "kcal": 76,
         "allergens": ["soybean", "gluten", "milk", "celery"],
@@ -139,7 +139,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "FRIED CHICKEN",
-        "description": "",
+        "description": "Crispy fried chicken.",
         "price": 95,
         "kcal": 256,
         "allergens": ["chicken", "egg", "gluten", "soybean"],
@@ -149,7 +149,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "MONGGO WITH AMPALAYA LEAVES",
-        "description": "",
+        "description": "Monggo bean stew with ampalaya leaves.",
         "price": 60,
         "kcal": 98,
         "allergens": ["gluten", "soybean", "milk", "crustaceans", "celery", "sulphite"],
@@ -159,7 +159,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "BEEF MONGOLIAN",
-        "description": "",
+        "description": "Beef strips cooked in a savory soy-based sauce.",
         "price": 100,
         "kcal": 255,
         "allergens": ["chicken", "soybean"],
@@ -169,7 +169,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "CHICKEN NUGGETS",
-        "description": "",
+        "description": "Crispy chicken nuggets.",
         "price": 75,
         "kcal": 240,
         "allergens": ["milk", "soybean", "wheat", "sulphite", "egg", "crustacean", "celery", "mustard"],
@@ -179,7 +179,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "AMPALAYA W/ EGG",
-        "description": "",
+        "description": "Sauteed ampalaya with scrambled egg.",
         "price": 60,
         "kcal": 104,
         "allergens": ["egg"],
@@ -189,7 +189,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "FRIED RICE",
-        "description": "",
+        "description": "Fried rice with garlic.",
         "price": 25,
         "kcal": 202,
         "allergens": ["chicken", "milk", "soybean", "celery"],
@@ -199,7 +199,7 @@ FOOD_DATABASE = [
     },
     {
         "name": "CHAMPORADO",
-        "description": "",
+        "description": "Sweet chocolate rice porridge.",
         "price": 50,
         "kcal": 280,
         "allergens": ["gluten", "nut"],
@@ -308,7 +308,7 @@ def get_available_menu():
     return (
         "Today's available menu:\n"
         + "\n".join(available_items)
-        + "\nA cup of plain rice for an additional ₱15 [205 kcal]"
+        + "\nAdd-on a cup of plain rice for only ₱15 [205 kcal]"
     )
 
 # we checkin the keywords now
@@ -605,6 +605,47 @@ def get_food_suggestion(criteria_type, value=None):
             elif target_cat in ["vegetable", "veggie"] and (any(v in name for v in ["ampalaya", "monggo", "tofu"]) or item.get("isVegetarian")):
                 filtered.append(item)
 
+    elif criteria_type == "without_category" and value:
+        target_cat = value.lower().strip()
+        db_allergen_map = {
+            "egg": "egg", "eggs": "egg",
+            "soy": "soybean", "soya": "soybean", "soybean": "soybean", "soybeans": "soybean",
+            "dairy": "milk", "milk": "milk",
+            "seafood": "seafood", "seafoods": "seafood",
+            "crustacean": "crustacean", "crustaceans": "crustaceans",
+            "nut": "nut", "nuts": "nut",
+            "wheat": "wheat", "gluten": "gluten"
+        }
+        mapped_allergen = db_allergen_map.get(target_cat, target_cat)
+
+        for item in available:
+            keywords = [k.lower() for k in item.get("keywords", [])]
+            name = item["name"].lower()
+            allergens = [a.lower() for a in item.get("allergens", [])]
+
+            is_excluded = False
+
+            if target_cat in ["pork"] and ("pork" in keywords or "pork" in name):
+                is_excluded = True
+            elif target_cat in ["beef"] and ("beef" in keywords or "beef" in name):
+                is_excluded = True
+            elif target_cat in ["chicken"] and ("chicken" in keywords or "chicken" in name or "chicken" in allergens):
+                is_excluded = True
+            elif target_cat in ["meat", "meats"] and ("meat" in keywords or any(m in name or m in keywords for m in ["pork", "beef", "chicken", "sausage", "hotdog"])):
+                is_excluded = True
+            elif target_cat in ["fish", "seafood", "seafoods"] and ("fish" in keywords or "fish" in allergens or "seafood" in allergens or "crustaceans" in allergens or "crustacean" in allergens or any(f in name for f in ["fish", "bangus", "salmon"])):
+                is_excluded = True
+            elif target_cat in ["vegetable", "veggie", "veggies"] and (any(v in name for v in ["ampalaya", "monggo", "tofu"]) or item.get("isVegetarian")):
+                is_excluded = True
+            elif mapped_allergen in allergens or target_cat in allergens:
+                is_excluded = True
+
+            if not is_excluded:
+                filtered.append(item)
+
+        if not filtered:
+            return f"Sorry, no available options found after excluding '{value}'."
+
     elif criteria_type == "allergen" and value:
         allergen_type = value.lower().strip()
         allergen_map = {"eggs": "egg", "soy": "soybean", "dairy": "milk"}
@@ -823,12 +864,28 @@ pairs = [
         ["CREATE_ORDER_%1|%2"],
     ],
 
+    # may allergy
+
+    [
+        r".*\b(suggest|recommend|what can i eat|what should i eat|food|lunch|dinner)\b.*\b(allergic to|allergy|allergies|no|without|free from)\s+(to\s+|)\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts)\b.*",
+        ["SUGGEST_ALLERGEN_%4"],
+    ],
+    [
+        r".*\b(suggest|recommend|what can i eat|what should i eat|food|lunch|dinner)\b.*\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts)\s+(free|allergy|allergies)\b.*",
+        ["SUGGEST_ALLERGEN_%2"],
+    ],
+
+    [
+        r".*\b(suggest|recommend|pick|want)\b.*\b(without|no|exclude|minus|free from)\b.*\b(pork|beef|chicken|meat|meats|fish|seafood|seafoods|veggie|vegetable|veggies|soy|soya|soybean|gluten|egg|eggs|dairy|milk)\b.*",
+        ["SUGGEST_WITHOUT_%3"],
+    ],
+
     # recommendation tong mga sunod
 
     [
-    r".*\b(suggest|recommend|pick|want)\b.*\b(pork|beef|chicken|meat|meats|fish|seafood|veggie|vegetable)\b.*",
-    ["SUGGEST_CATEGORY_%2"],
-],
+        r".*\b(suggest|recommend|pick|want)\b.*\b(pork|beef|chicken|meat|meats|fish|seafood|veggie|vegetable)\b.*",
+        ["SUGGEST_CATEGORY_%2"],
+    ],
 
     # recommend for brokies
 
@@ -858,16 +915,7 @@ pairs = [
         ["SUGGEST_GENERAL"],
     ],
 
-    # may allergy
-
-    [
-        r".*\b(suggest|recommend|what can i eat|what should i eat|food|lunch|dinner)\b.*\b(allergic to|allergy|allergies|no|without|free from)\s+(to\s+|)\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts)\b.*",
-        ["SUGGEST_ALLERGEN_%4"],
-    ],
-    [
-        r".*\b(suggest|recommend|what can i eat|what should i eat|food|lunch|dinner)\b.*\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts)\s+(free|allergy|allergies)\b.*",
-        ["SUGGEST_ALLERGEN_%2"],
-    ],
+    
 
     # herbivore 
 
@@ -1193,8 +1241,8 @@ pairs = [
 
 chatbot = Chat(pairs, reflections)
 
-'''
-print("Hi, I'm ArcherEats. How can I help you?")
+
+print("Hi, I'm ArcherBot! Ask me anything about the menu, allergies, and suggestions! \n- What's on the menu?\n- What can I get if I have seafood allergy?\n Suggest anything without pork. \nHow to place order?")
 
 while True:
     try:
@@ -1228,6 +1276,10 @@ while True:
             elif clean_response.startswith("WITHOUT_"):
                 category = clean_response.replace("WITHOUT_", "")
                 print(get_category_removed_menu(category))
+
+            elif clean_response.startswith("SUGGEST_WITHOUT_"):
+                category = clean_response.replace("SUGGEST_WITHOUT_", "")
+                print(get_food_suggestion("without_category", category))
 
             elif clean_response.startswith("SUGGEST_CATEGORY_"):
                 category = clean_response.replace("SUGGEST_CATEGORY_", "")
@@ -1310,4 +1362,4 @@ while True:
             )
 
     except (KeyboardInterrupt, EOFError, SystemExit):
-        break '''
+        break
