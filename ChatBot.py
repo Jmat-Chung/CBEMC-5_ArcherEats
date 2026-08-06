@@ -877,7 +877,6 @@ def get_queue_display():
 # regex
 
 pairs = [
-    # eto dapat sa taas para di magconflict sa iba
 
     # dis is creating order na ilalagay sa napakacool na dummy queue YIPEE
 
@@ -888,8 +887,19 @@ pairs = [
 
     [
         r"^\s*(status|situation)\s*,\s*(canteen|cafeteria)\s*$",
-        ["CREATE_ORDER_%1|%2"],
+        ["We can not track the current state of the cafeteria. However, we can give a hint based on how many orders there are. Just type \"Queue\" to see the number of pending orders."],
     ],
+
+    [
+        r".*\b(how to order|how do i order|how to place order|how can i order|ordering process|order guide)\b.*",
+        [
+            "To place an order, just type the quantity and item name! For example:\n"
+            "• 1 Roast Pork\n"
+            "• 2 Fried Chicken"
+        ],
+    ],
+
+    # create orders
 
     [
         r"^\s*(\d+)\s*,\s*(.+)\s*$",
@@ -900,27 +910,80 @@ pairs = [
         ["CREATE_ORDER_%1|%2"],
     ],
 
+    # add allergy to allergy list
+
+    [
+        r".*\b(?:i have|i\'m allergic to|im allergic to|i am allergic to|i can\'t have|i cant have|cannot eat|can\'t eat|cant eat|allergic to)\s+(?:an?\s+)?([a-zA-Z]+)(?:\s+allergy)?.*",
+        ["REGISTER_ALLERGY_%1"],
+    ],
+
+    # specific allergen question 
+
+    [
+        r".*\b(does|is|has)\s+(.+)\b\s+(contain|have|has|got|with)\s+(any\s+|)(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*",
+        ["CHECK_ALLERGEN_%2|%5"],
+    ],
+
+    [
+        r".*\b(is there|are there)\s+(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\s+(in|inside|on)\s+(.+)\b.*",
+        ["CHECK_ALLERGEN_%4|%2"],
+    ],
+
+    # asking for stuff about certain food
+    
+    [
+        r".*\b(what is|what\'s|tell me about|describe|info on|details for)\s+(.+)\b\s*$",
+        ["INFO_%2"],
+    ],
+
+    # price checker
+
+    [
+        r".*\b(how much is|price of|how much for|cost of|how much)\s+(.+)\b.*",
+        ["PRICE_%2"],
+    ],
+
+    [
+        r".*\b(.+)\s+(price|cost|how much)\b.*",
+        ["PRICE_%1"],
+    ],
+
+    [
+        r".*\b(how much is it|how much does it cost|what is the price|price|how much)\b.*",
+        ["PRICE_it"],
+    ],
+
+    # calorie checker
+
+    # Calorie checkers (Handles both "calories in roast pork" AND "roast pork calories")
+    [
+        r".*\b(how many calories|calorie count|kcal|calories)\s+(are\s+|)(in|of|for)\s+(.+)\b.*",
+        ["CALORIES_%4"],
+    ],
+    [
+        r".*\b(.+)\s+(calories|calorie count|kcal)\b.*",
+        ["CALORIES_%1"],
+    ],
+    [
+        r".*\b(how many calories does it have|how many calories in it|how many calories is it|calories in it)\b.*",
+        ["CALORIES_it"],
+    ],
+
     # may allergy
 
     [
         r".*\b(suggest|recommend|what can i eat|what should i eat|food|lunch|dinner)\b.*\b(allergic to|allergy|allergies|no|without|free from)\s+(to\s+|)\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts)\b.*",
         ["SUGGEST_ALLERGEN_%4"],
     ],
+
     [
         r".*\b(suggest|recommend|what can i eat|what should i eat|food|lunch|dinner)\b.*\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts)\s+(free|allergy|allergies)\b.*",
         ["SUGGEST_ALLERGEN_%2"],
     ],
 
     [
-        r".*\b(suggest|recommend|pick|want)\b.*\b(without|no|exclude|minus|free from)\b.*\b(pork|beef|chicken|meat|meats|fish|seafood|seafoods|veggie|vegetable|veggies|soy|soya|soybean|gluten|egg|eggs|dairy|milk)\b.*",
+        r".*\b(suggest|recommend|pick|give me a)\b.*\b(without|no|exclude|minus|free from)\b.*\b(pork|beef|chicken|meat|meats|fish|seafood|seafoods|veggie|vegetable|veggies|soy|soya|soybean|gluten|egg|eggs|dairy|milk)\b.*",
         ["SUGGEST_WITHOUT_%3"],
-    ],
-
-    # recommendation tong mga sunod
-
-    [
-        r".*\b(suggest|recommend|pick|want)\b.*\b(pork|beef|chicken|meat|meats|fish|seafood|veggie|vegetable)\b.*",
-        ["SUGGEST_CATEGORY_%2"],
     ],
 
     # recommend for brokies
@@ -928,6 +991,13 @@ pairs = [
     [
         r".*\b(suggest|recommend|what can i get|food|lunch|dinner|breakfast)\b.*\b(\d+)\b\s*(peso|pesos|php|p|budget|).*",
         ["SUGGEST_BUDGET_%2"],
+    ],
+
+    # recommendation tong mga sunod
+
+    [
+        r".*\b(suggest|recommend|pick|want)\b.*\b(pork|beef|chicken|meat|meats|fish|seafood|veggie|vegetable)\b.*",
+        ["SUGGEST_CATEGORY_%2"],
     ],
 
     # high cal 
@@ -944,6 +1014,33 @@ pairs = [
         ["SUGGEST_LOWCAL"],
     ],
 
+    # Suggestion Cheapest
+
+    [
+        r".*\b(cheapest|lowest price|least expensive|budget meal|cheapest meal)\b.*",
+        ["SUGGEST_CHEAPEST"],
+    ],
+
+    # Suggestion Lowest Calories
+
+    [
+        r".*\b(lowest calories|lowest calorie|healthiest|lightest|lowest kcal)\b.*",
+        ["SUGGEST_LOWESTCAL"],
+    ],
+
+    #Suggestion Most Filling
+
+    [
+        r".*\b(most filling|heaviest|largest meal|full meal|very hungry)\b.*",
+        ["SUGGEST_FILLING"],
+    ],
+
+    #Suggestion Vegetarian
+    [
+        r".*\b(recommend|suggest|pick)\b.*\b(vegetarian|veggie|vegetarian meal)\b.*",
+        ["SUGGEST_VEGETARIAN"],
+    ],
+
     # just indecisive
 
     [
@@ -951,70 +1048,27 @@ pairs = [
         ["SUGGEST_GENERAL"],
     ],
 
-    
-
-    # herbivore 
+    # without meats
 
     [
-        r".*\b(vegetarian|veggie|meatless|no meat|plant based|vegetables)\b.*",
-        ["FETCH_VEGETARIAN"],
-    ],
-
-    # Suggestion Cheapest
-
-    [
-    r".*\b(cheapest|lowest price|least expensive|budget meal|cheapest meal)\b.*",
-    ["SUGGEST_CHEAPEST"],
-    ],
-
-    # Suggestion Lowest Calories
-
-    [
-    r".*\b(lowest calories|lowest calorie|healthiest|lightest|lowest kcal)\b.*",
-    ["SUGGEST_LOWESTCAL"],
-    ],
-
-    #Suggestion Most Filling
-
-    [
-    r".*\b(most filling|heaviest|largest meal|full meal|very hungry)\b.*",
-    ["SUGGEST_FILLING"],
-    ],
-
-    #Suggestion Vegetarian
-    [
-    r".*\b(recommend|suggest|pick)\b.*\b(vegetarian|veggie|vegetarian meal)\b.*",
-    ["SUGGEST_VEGETARIAN"],
-    ],
-
-     # without meats
-
-    [
-        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero)\b.*\b(pork)\b.*", 
-        ["WITHOUT_pork"]
+        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero|doesnt have|doesn\'t have|does not have|has no)\b.*\b(pork)\b.*",
+        ["WITHOUT_pork"],
     ],
     [
-        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero)\b.*\b(beef)\b.*",
-        ["WITHOUT_beef"]
+        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero|doesnt have|doesn\'t have|does not have|has no)\b.*\b(beef)\b.*",
+        ["WITHOUT_beef"],
     ],
     [
-        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero)\b.*\b(chicken)\b.*",
+        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero|doesnt have|doesn\'t have|does not have|has no)\b.*\b(chicken)\b.*",
         ["WITHOUT_chicken"],
     ],
-
     [
-        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero)\b.*\b(fish|seafood|seafoods)\b.*",
+        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero|doesnt have|doesn\'t have|does not have|has no)\b.*\b(fish|seafood|seafoods)\b.*",
         ["WITHOUT_fish"],
     ],
-
     [
-        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero)\b.*\b(meat|meats)\b.*",
-        ["WITHOUT_meat"]
-    ],
-
-    [
-        r".*\b(?:i have|i\'m allergic to|im allergic to|i am allergic to|i can\'t have|i cant have|cannot eat|allergic to)\s+(?:an?\s+)?([a-zA-Z]+)(?:\s+allergy)?.*",
-        ["REGISTER_ALLERGY_%1"],
+        r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero|doesnt have|doesn\'t have|does not have|has no)\b.*\b(meat|meats)\b.*",
+        ["WITHOUT_meat"],
     ],
 
     # without allergens
@@ -1030,13 +1084,21 @@ pairs = [
 
     # Catches general requests like "food with egg" or "dish with shrimp"
     [
-        r".*\b(food|dish|meal|what)\b.*\b(with|contains|has)\b.*\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nut|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*",
-        ["FOOD_WITH_ALLERGEN_%3"],
+        r"^(?!.*\b(no|not|without|cant|can\'t|cannot|dont|don\'t)\b).*\b(food|dish|meal|what)\b.*\b(with|contains|has)\b.*\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nut|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*",
+        ["FOOD_WITH_ALLERGEN_%4"],
     ],
+
     # Catches direct questions like "show me food with dairy"
     [
         r".*\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nut|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*\b(food|dish|meal)\b.*",
         ["FOOD_WITH_ALLERGEN_%1"],
+    ],
+
+    # herbivore 
+
+    [
+        r".*\b(vegetarian|veggie|meatless|no meat|plant based|vegetables)\b.*",
+        ["FETCH_VEGETARIAN"],
     ],
 
     # with meat
@@ -1045,22 +1107,27 @@ pairs = [
         r".*\b(pork)\b.*",
         ["CATEGORY_pork"]
     ],
+
     [
         r".*\b(beef)\b.*",
         ["CATEGORY_beef"]
     ],
+
     [
         r".*\b(chicken)\b.*",
         ["CATEGORY_chicken"]
     ],
+
     [
         r".*\b(meat|meats)\b.*",
         ["CATEGORY_meat"]
     ],
+
     [
         r".*\b(fish|seafood|seafoods)\b.*",
         ["CATEGORY_fish"]
     ],
+
     [
         r".*\b(vegetable|vegetables|veggie|veggies)\b.*",
         ["CATEGORY_vegetable"]
@@ -1078,7 +1145,7 @@ pairs = [
     ],
 
     # this saying hab allergy so the chatbot is like oh no what ur allergy tapos the chatbot will remember kasi hes nice and sweet
-    
+
     [
         r".*(allerg).*",
         ["IDENTIFY_ALLERGY"]
@@ -1089,47 +1156,6 @@ pairs = [
     [
         r"(.*\b|)(menu|available|food|dishes|whats on|what is on)\b.*",
         ["FETCH_MENU"],
-    ],
-
-    # asking for stuff about certain food
-    
-    [
-        r".*\b(what is|what\'s|tell me about|describe|info on|details for)\s+(.+)\b\s*$",
-        ["INFO_%2"],
-    ],
-
-    # specific allergen question 
-
-    [
-        r".*\b(does|is|has)\s+(.+)\b\s+(contain|have|has|got|with)\s+(any\s+|)(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*",
-        ["CHECK_ALLERGEN_%2|%5"],
-    ],
-
-    [
-        r".*\b(is there|are there)\s+(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\s+(in|inside|on)\s+(.+)\b.*",
-        ["CHECK_ALLERGEN_%4|%2"],
-    ],
-
-    # price checker
-
-    [
-        r".*\b(how much is|price of|how much for|cost of|how much)\s+(.+)\b.*",
-        ["PRICE_%2"],
-    ],
-    [
-        r".*\b(how much is it|how much does it cost|what is the price|price|how much)\b.*",
-        ["PRICE_it"],
-    ],
-
-    # calorie checker
-
-    [
-        r".*\b(how many calories|calorie count|kcal|calories)\s+(are\s+|)(in|of|for)\s+(.+)\b.*",
-        ["CALORIES_%4"],
-    ],
-    [
-        r".*\b(how many calories does it have|how many calories in it|how many calories is it|calories in it|kcal count|how many calories|calories)\b.*",
-        ["CALORIES_it"],
     ],
 
     # oh cool
@@ -1144,9 +1170,9 @@ pairs = [
     # ordering, claiming, or not claiming kung gusto mong mapunta sdfo
     
     [
-        r"(.*)(order)(.*)",
+        r".*\b(order|ordering|how to order)\b.*",
         [
-            "To order, please head to the lower left corner and select your meal from there! I could also order for you! Just say what you want to order and I'll do it for you (e.g., '1 Roast Pork')"
+            "To order, simply type your quantity and item name (e.g., '1 Roast Pork')."
         ],
     ],
 
@@ -1171,15 +1197,7 @@ pairs = [
         ],
     ],
 
-    # assistance - victor's activity 4 basically
-
-    [
-        r"(hi|hello|hey|good (morning|afternoon|evening))",
-        [
-            "Hello! Welcome to ArcherEats support. How can I help you today?",
-            "Hi there! Need help with anything?",
-        ],
-    ],
+    # victor act 4
 
     [
         r"(.*)(create|register|sign up|open|make)(.*)(account|profile)(.*)",
@@ -1270,6 +1288,27 @@ pairs = [
         ],
     ],
 
+    [
+        r"(hi|hello|hey|good (morning|afternoon|evening))",
+        [
+            "Hello! Welcome to ArcherEats support. How can I help you today?",
+            "Hi there! Need help with anything?",
+        ],
+    ],
+
+    [
+        r"(bye|goodbye|exit|quit)",
+        [
+            "Thank you for using ArcherEats support. Have a great day!",
+            "Goodbye! Your ArcherEats support assistant is always here to help.",
+        ],
+    ],
+
+    [
+        r"(.*)(thank|thanks)(.*)",
+        ["You're welcome! Enjoy your meal!"]
+    ],
+
 # GOGOGOGO SPAM SPAM SPAM ERROR HANDLING SUGGESTION RAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH
     
     [
@@ -1293,7 +1332,7 @@ pairs = [
     ],
 
     [
-        r".*\b(calorie|calories|kcal|diet|heavy|light|weight|fat|fit|bulk|healthy)\b.*",
+        r".*\b(calorie|calories|kcal|diet|heavy|light|weight|fat|fit|bulk|healthy|health)\b.*",
         [
             "Interested in calorie and nutritional counts? You can ask:\n"
             "• 'How many calories are in Tofu Sisig?'\n"
@@ -1324,15 +1363,6 @@ pairs = [
     ],
 
     [
-        r"(bye|goodbye|exit|quit)",
-        [
-            "Thank you for using ArcherEats support. Have a great day!",
-            "Goodbye! Your ArcherEats support assistant is always here to help.",
-        ],
-    ],
-    [r"(.*)(thank|thanks)(.*)", ["You're welcome! Enjoy your meal!"]],
-
-    [
         r"(.*)(shin|shintaroh|nomoto|emperor)(.*)",
         ["shin did not get enough sleep for this"]
     ],
@@ -1348,11 +1378,9 @@ pairs = [
             "• Ordering: '1 Roast Pork'"
         ],
     ],
+ ]
 
 
-
-    
-]
 
 chatbot = Chat(pairs, reflections)
 
