@@ -22,7 +22,7 @@ from ChatBot import (
 )
 
 # --- 1. Page Configuration & Custom DLSU Green Header ---
-st.set_page_config(page_title="ArcherBot", page_icon="🏹", layout="centered")
+st.set_page_config(page_title="ArcherEats", page_icon="🏹", layout="centered")
 
 # Custom CSS for DLSU Green branding matching your reference image
 st.markdown("""
@@ -51,8 +51,8 @@ st.markdown("""
     </style>
     
     <div class="main-header">
-        <div class="sub-text">Powered by DLSU Dining</div>
-        <div class="main-title">ArcherBot</div>
+        <div class="sub-text">CBEMC-5 ChatBot by CHUNG-NOMOTO-RICALDE-VASCO</div>
+        <div class="main-title">ArcherEats</div>
     </div>
 """, unsafe_allow_html=True)
 
@@ -62,7 +62,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant", 
-            "content": "Hi! I'm ArcherBot 🤖 Ask me anything about today's menu, prices, or allergens!"
+            "content": "Hi! I'm ArcherEats 🤖 Ask me anything about today's menu, prices, or allergens!"
         }
     ]
 
@@ -115,7 +115,7 @@ for msg in st.session_state.messages:
 
 
 # --- 5. User Input & Bot Response Handling ---
-if user_input := st.chat_input("Ask ArcherBot..."):
+if user_input := st.chat_input("Ask ArcherEats..."):
     # Render user message
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user", avatar="👤"):
