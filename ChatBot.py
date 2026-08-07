@@ -11,6 +11,7 @@
 import random
 import nltk
 from nltk.chat.util import Chat, reflections
+import re
 
 FOOD_DATABASE = [
     {
@@ -238,6 +239,12 @@ FOOD_DATABASE = [
     },
 ]
 
+VALID_ALLERGENS = [
+    "egg", "soybean", "milk", "nut", "seafood", 
+    "fish", "crustacean", "gluten", "wheat", 
+    "celery", "mustard", "sulphite", "sesame", "chicken"
+]
+
 USER_ID_NUMBER = 12345678
 
 # dummy dummy lang toh para pag nag order si user di naman sya una diba diba and para lang if madaming ginawang order si user nadagdag tlga para cool 
@@ -287,6 +294,8 @@ def register_user_allergy(allergen_type, user_allergies=None):
         user_allergies = []
 
     target = normalize_allergen(allergen_type)
+    if target not in VALID_ALLERGENS:
+        return f"Sorry, '{allergen_type}' is not recognized as a standard allergen on our menu.", user_allergies
     if target not in user_allergies:
         user_allergies.append(target)
 
@@ -875,12 +884,22 @@ def get_queue_display():
     )
 
 def get_food_allergens_list(food_name, last_discussed_food=None):
-    if food_name.lower().strip() == "it":
+    if food_name.lower().strip() in ["it", "this", "that"]:
         if not last_discussed_food:
             return "Which food item are you referring to?", last_discussed_food
         food_name = last_discussed_food
 
-    food_name_clean = food_name.strip().upper()
+    food_name_clean = re.sub(r"[^\w\s]", "", food_name).strip().upper()
+
+    for item in FOOD_DATABASE:
+        if food_name_clean == item["name"].upper():
+            allergens = item.get("allergens", [])
+            if allergens:
+                allergens_str = ", ".join(allergens)
+                return f"{item['name']} contains the following allergens: {allergens_str}.", item["name"]
+            else:
+                return f"{item['name']} has no declared allergens.", item["name"]
+
     for item in FOOD_DATABASE:
         if food_name_clean in item["name"].upper():
             allergens = item.get("allergens", [])
@@ -900,6 +919,19 @@ def get_food_allergens_list(food_name, last_discussed_food=None):
 pairs = [
 
     # dis is creating order na ilalagay sa napakacool na dummy queue YIPEE
+
+    [
+        r".*\b(allergens in|allergen in|allergens of|allergen of|allergens for|allergen for|allergen list for|allergen list of)\s+(.+)$",
+        ["ALLERGEN_LIST_%2"],
+    ],
+    [
+        r".*\b(what allergens are in|what allergen is in|what are the allergens in)\s+(.+)$",
+        ["ALLERGEN_LIST_%2"],
+    ],
+    [
+        r"^(.+)\s+(allergens|allergen|allergen list)$",
+        ["ALLERGEN_LIST_%1"],
+    ],
 
     [
         r"(.*)\b(can i pick up|soon|arrive|how long will|how long before|my turn|queue|line|wait time|waiting time|how long is the line|how long is the queue|when will my order|when can i get my order)\b(.*)",
@@ -943,24 +975,13 @@ pairs = [
     # add allergy to allergy list
 
     [
-        r".*\b(?:i have|i\'m allergic to|im allergic to|i am allergic to|i can\'t have|i cant have|cannot eat|can\'t eat|cant eat|allergic to|not allowed to eat|dont eat|don\'t eat|avoid)\s+(?:an?\s+)?([a-zA-Z]+)(?:\s+allergy)?.*",
+        r".*\b(?:i have|i\'m allergic to|im allergic to|i am allergic to|i can\'t have|i cant have|cannot eat|can\'t eat|cant eat|allergic to|not allowed to eat|dont eat|don\'t eat|avoid)\s+(?:an?\s+)?\b(egg|eggs|soy|soybean|soya|milk|dairy|nut|nuts|seafood|seafoods|fish|crustacean|crustaceans|gluten|wheat|celery|mustard|sulphite|sesame|chicken)\b(?:\s+allergy)?.*",
         ["REGISTER_ALLERGY_%1"],
     ],
 
     # specific allergen question 
 
-    [
-        r".*\b(allergens in|allergens of|allergens for|allergen list for|allergen list of)\s+(.+)\b.*",
-        ["ALLERGEN_LIST_%2"],
-    ],
-    [
-        r".*\b(.+)\s+(allergens|allergen list)\b.*",
-        ["ALLERGEN_LIST_%1"],
-    ],
-    [
-        r".*\b(what allergens are in|what are the allergens in)\s+(.+)\b.*",
-        ["ALLERGEN_LIST_%2"],
-    ],
+    
 
     [
         r".*\b(does|is|has)\s+(.+)\b\s+(contain|have|has|got|with)\s+(any\s+|)(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*",
@@ -1024,8 +1045,8 @@ pairs = [
     ],
 
     [
-        r".*\b(suggest|recommend|pick|give me a)\b.*\b(without|no|exclude|minus|free from)\b.*\b(pork|beef|chicken|meat|meats|fish|seafood|seafoods|veggie|vegetable|veggies|soy|soya|soybean|gluten|egg|eggs|dairy|milk)\b.*",
-        ["SUGGEST_WITHOUT_%3"],
+        r".*\b(suggest|recommend|pick|give me a)\b\s+(a|an|one|dish|meal)?\b.*\b(without|no|exclude|minus|free from)\b.*\b(pork|beef|chicken|meat|meats|fish|seafood|seafoods|veggie|vegetable|veggies|soy|soya|soybean|gluten|egg|eggs|dairy|milk)\b.*",
+        ["SUGGEST_WITHOUT_%4"],
     ],
 
     # recommend for brokies
@@ -1194,7 +1215,7 @@ pairs = [
     # this saying hab allergy so the chatbot is like oh no what ur allergy tapos the chatbot will remember kasi hes nice and sweet
 
     [
-        r".*(allerg).*",
+        r".*\b(i have allergies|i have an allergy|my allergies|check my allergies)\b.*",
         ["IDENTIFY_ALLERGY"]
     ],
 
@@ -1456,6 +1477,13 @@ if __name__ == "__main__":
                 if clean_response == "FETCH_MENU":
                     print(get_available_menu())
 
+                elif clean_response.startswith("ALLERGEN_LIST_"):
+                    food = clean_response.replace("ALLERGEN_LIST_", "")
+                    msg, local_last_discussed_food = get_food_allergens_list(
+                        food, local_last_discussed_food
+                    )
+                    print(msg)
+
                 elif clean_response == "FETCH_VEGETARIAN":
                     print(get_vegetarian_menu())
 
@@ -1468,6 +1496,14 @@ if __name__ == "__main__":
                     print(
                         get_allergen_safe_menu(
                             user_allergies=local_user_allergies
+                        )
+                    )
+
+                elif clean_response.startswith("ALLERGEN_"):
+                    allergen = clean_response.replace("ALLERGEN_", "")
+                    print(
+                        get_allergen_safe_menu(
+                            allergen, local_user_allergies
                         )
                     )
 
@@ -1491,13 +1527,7 @@ if __name__ == "__main__":
                     category = clean_response.replace("SUGGEST_CATEGORY_", "")
                     print(get_food_suggestion("category", category))
 
-                elif clean_response.startswith("ALLERGEN_"):
-                    allergen = clean_response.replace("ALLERGEN_", "")
-                    print(
-                        get_allergen_safe_menu(
-                            allergen, local_user_allergies
-                        )
-                    )
+                
 
                 elif clean_response.startswith("SUGGEST_BUDGET_"):
                     amount = clean_response.replace("SUGGEST_BUDGET_", "")
@@ -1564,12 +1594,7 @@ if __name__ == "__main__":
                     meal = clean_response.replace("MEAL_", "")
                     print(get_meal_type_menu(meal))
 
-                elif clean_response.startswith("ALLERGEN_LIST_"):
-                    food = clean_response.replace("ALLERGEN_LIST_", "")
-                    msg, local_last_discussed_food = get_food_allergens_list(
-                        food, local_last_discussed_food
-                    )
-                    print(msg)
+                
 
                 elif clean_response == "DISPLAY_QUEUE":
                     print(get_queue_display())

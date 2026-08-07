@@ -207,6 +207,33 @@ if user_input := st.chat_input("Ask ArcherEats..."):
 
             if clean_response == "FETCH_MENU":
                 bot_text = get_available_menu()
+
+            elif clean_response.startswith("ALLERGEN_LIST_"):
+                food = clean_response.replace("ALLERGEN_LIST_", "")
+                bot_text, st.session_state.last_discussed_food = (
+                    get_food_allergens_list(
+                        food, st.session_state.last_discussed_food
+                    )
+                )
+
+            elif clean_response.startswith("REGISTER_ALLERGY_"):
+                allergen = clean_response.replace("REGISTER_ALLERGY_", "")
+                confirm_msg, st.session_state.user_allergies = (
+                    register_user_allergy(
+                        allergen, st.session_state.user_allergies
+                    )
+                )
+                safe_menu = get_allergen_safe_menu(
+                    user_allergies=st.session_state.user_allergies
+                )
+                bot_text = f"{confirm_msg}\n\n{safe_menu}"
+
+            elif clean_response.startswith("ALLERGEN_"):
+                allergen = clean_response.replace("ALLERGEN_", "")
+                bot_text = get_allergen_safe_menu(
+                    allergen, st.session_state.user_allergies
+                )
+                
             elif clean_response == "FETCH_VEGETARIAN":
                 bot_text = get_vegetarian_menu()
             elif clean_response == "DISPLAY_QUEUE":
@@ -223,22 +250,8 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                 bot_text = get_food_with_allergen(
                     clean_response.replace("FOOD_WITH_ALLERGEN_", "")
                 )
-            elif clean_response.startswith("ALLERGEN_"):
-                allergen = clean_response.replace("ALLERGEN_", "")
-                bot_text = get_allergen_safe_menu(
-                    allergen, st.session_state.user_allergies
-                )
-            elif clean_response.startswith("REGISTER_ALLERGY_"):
-                allergen = clean_response.replace("REGISTER_ALLERGY_", "")
-                confirm_msg, st.session_state.user_allergies = (
-                    register_user_allergy(
-                        allergen, st.session_state.user_allergies
-                    )
-                )
-                safe_menu = get_allergen_safe_menu(
-                    user_allergies=st.session_state.user_allergies
-                )
-                bot_text = f"{confirm_msg}\n\n{safe_menu}"
+            
+            
             elif clean_response.startswith("SUGGEST_CATEGORY_"):
                 cat = clean_response.replace("SUGGEST_CATEGORY_", "")
                 bot_text = get_food_suggestion("category", cat)
@@ -303,13 +316,7 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                     "Please state your allergy (e.g., 'I am allergic to eggs')."
                 )
 
-            elif clean_response.startswith("ALLERGEN_LIST_"):
-                food = clean_response.replace("ALLERGEN_LIST_", "")
-                bot_text, st.session_state.last_discussed_food = (
-                    get_food_allergens_list(
-                        food, st.session_state.last_discussed_food
-                    )
-                )
+            
             elif clean_response.startswith("CREATE_ORDER_"):
                 payload = clean_response.replace("CREATE_ORDER_", "")
                 if "|" in payload:
