@@ -10,7 +10,7 @@
 
 import streamlit as st
 
-# Import the chatbot and helper functions from ChatBot.py
+# Import chatbot engine and data helpers from ChatBot.py
 from ChatBot import (
     FOOD_DATABASE,
     USER_ID_NUMBER,
@@ -32,7 +32,7 @@ from ChatBot import (
     register_user_allergy,
 )
 
-# --- Page Configuration ---
+# --- Streamlit Page Configuration ---
 st.set_page_config(page_title="ArcherEats", page_icon="🏹", layout="centered")
 
 # --- Custom Styling Header ---
@@ -69,7 +69,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- Initialize Session State Memory ---
+# --- Session State Initialization ---
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
@@ -88,7 +88,7 @@ if "last_discussed_food" not in st.session_state:
     st.session_state.last_discussed_food = None
 
 
-# --- Web Ordering Functions ---
+# --- Web Ordering State Logic ---
 def start_web_order(count_str, food_query):
     try:
         count = int(count_str)
@@ -144,14 +144,14 @@ def generate_order_summary():
     )
 
 
-# --- Render Chat History ---
+# --- Render Conversation History ---
 for msg in st.session_state.messages:
     avatar = "🤖" if msg["role"] == "assistant" else "👤"
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 
 
-# --- Handle Input & Engine Execution ---
+# --- Chat Input Processing ---
 if user_input := st.chat_input("Ask ArcherEats..."):
     user_input = user_input.replace("\n", "").replace("\r", "").strip()
     st.session_state.messages.append({"role": "user", "content": user_input})
@@ -161,7 +161,7 @@ if user_input := st.chat_input("Ask ArcherEats..."):
     user_input_clean = user_input.strip().lower()
     bot_text = ""
 
-    # 1. State Machine Handling for Ordering Flow
+    # 1. Active Order State Machine
     if st.session_state.order_state == "AWAITING_RICE":
         if user_input_clean in ["y", "yes"]:
             st.session_state.pending_order["with_rice"] = True
@@ -197,7 +197,7 @@ if user_input := st.chat_input("Ask ArcherEats..."):
         else:
             bot_text = "Please type CONFIRM or CANCEL."
 
-    # 2. Standard Chatbot Intent Handling
+    # 2. Main Chatbot Routing (Connected directly to ChatBot.py responses)
     else:
         response = chatbot.respond(user_input)
 
@@ -264,6 +264,8 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                 bot_text = get_food_suggestion("filling")
             elif clean_response == "SUGGEST_VEGETARIAN":
                 bot_text = get_food_suggestion("vegetarian")
+
+            # --- ITEM DETAIL HANDLERS (INFO, PRICE, CALORIES, ALLERGEN CHECKS) ---
             elif clean_response.startswith("INFO_"):
                 food = clean_response.replace("INFO_", "")
                 bot_text, st.session_state.last_discussed_food = (
@@ -294,6 +296,7 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                             st.session_state.last_discussed_food,
                         )
                     )
+
             elif clean_response == "IDENTIFY_ALLERGY":
                 bot_text = (
                     "Please state your allergy (e.g., 'I am allergic to eggs')."

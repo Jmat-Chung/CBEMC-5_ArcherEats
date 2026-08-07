@@ -899,6 +899,15 @@ pairs = [
         ],
     ],
 
+    [
+        r".*\b(how to order|how do i order|how to place order|how can i order|ordering process|order guide)\b.*",
+        [
+            "To place an order, just type the quantity and item name! For example:\n"
+            "• 1 Roast Pork\n"
+            "• 2 Fried Chicken"
+        ],
+    ],
+
     # create orders
 
     [
@@ -923,7 +932,6 @@ pairs = [
         r".*\b(does|is|has)\s+(.+)\b\s+(contain|have|has|got|with)\s+(any\s+|)(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*",
         ["CHECK_ALLERGEN_%2|%5"],
     ],
-
     [
         r".*\b(is there|are there)\s+(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\s+(in|inside|on)\s+(.+)\b.*",
         ["CHECK_ALLERGEN_%4|%2"],
@@ -1037,8 +1045,8 @@ pairs = [
 
     #Suggestion Vegetarian
     [
-        r".*\b(recommend|suggest|pick)\b.*\b(vegetarian|veggie|vegetarian meal)\b.*",
-        ["SUGGEST_VEGETARIAN"],
+        r".*\b(suggest|recommend|what should i eat|pick for me)\b.*",
+        ["SUGGEST_GENERAL"],
     ],
 
     # just indecisive
@@ -1070,9 +1078,6 @@ pairs = [
         r".*\b(without|no|not|dont|don\'t|exclude|minus|skip|remove|zero|doesnt have|doesn\'t have|does not have|has no)\b.*\b(meat|meats)\b.*",
         ["WITHOUT_meat"],
     ],
-
-    # without allergens
-
     [
         r".*\b(allergic to|allergy|allergies|no|without|free from|exclude|minus|skip|remove)\s+(to\s+|)\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nut|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|wheat|chicken)\b.*",
         ["ALLERGEN_%3"],
@@ -1080,6 +1085,14 @@ pairs = [
     [
         r".*\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nut|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|wheat|chicken)\s+(free|allergy|allergies|intolerant)\b.*",
         ["ALLERGEN_%1"],
+    ],
+    [
+        r"^(?!.*\b(no|not|without|cant|can\'t|cannot|dont|don\'t)\b).*\b(food|dish|meal|what)\b.*\b(with|contains|has)\b.*\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nut|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*",
+        ["FOOD_WITH_ALLERGEN_%4"],
+    ],
+    [
+        r".*\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nut|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*\b(food|dish|meal)\b.*",
+        ["FOOD_WITH_ALLERGEN_%1"],
     ],
 
     # Catches general requests like "food with egg" or "dish with shrimp"
@@ -1169,12 +1182,7 @@ pairs = [
 
     # ordering, claiming, or not claiming kung gusto mong mapunta sdfo
     
-    [
-        r".*\b(order|ordering|how to order)\b.*",
-        [
-            "To order, simply type your quantity and item name (e.g., '1 Roast Pork')."
-        ],
-    ],
+    
 
     [
         r"(.*)(where)(.*)\b(claim|receive|take|get|grab)\b(.*)",
