@@ -41,12 +41,7 @@ st.set_page_config(page_title="ArcherEats", page_icon="🎯", layout="centered")
 st.markdown(
     """
 <style>
-    /* 
-       Note: We removed the .stApp background gradient so 
-       Streamlit can naturally handle the dark/light background.
-    */
-    
-    /* Top Dark Green Header Bar (Stays green in both modes) */
+    /* Top Dark Green Header Bar */
     .main-header {
         background-color: #1e5a36;
         color: white;
@@ -71,9 +66,9 @@ st.markdown(
         margin-top: 2px;
     }
 
-    /* Custom Menu Cards - Now adapts to Dark Mode */
+    /* Custom Menu Cards - Dark Mode Compatible */
     .menu-card {
-        background-color: var(--secondary-background-color); /* Changes to dark grey in Dark Mode */
+        background-color: var(--secondary-background-color); 
         border-radius: 16px;
         padding: 20px;
         margin-bottom: 20px;
@@ -84,13 +79,13 @@ st.markdown(
         font-size: 22px; 
         font-weight: bold; 
         font-family: 'Georgia', serif; 
-        color: var(--text-color); /* Changes to white in Dark Mode */
+        color: var(--text-color); 
         margin-bottom: 6px; 
     }
     .item-desc { 
         font-size: 14px; 
         color: var(--text-color); 
-        opacity: 0.75; /* Uses opacity instead of grey hex so it works everywhere */
+        opacity: 0.75; 
         margin-bottom: 14px; 
         line-height: 1.4;
     }
@@ -102,10 +97,10 @@ st.markdown(
         display: flex;
         gap: 12px;
     }
-    .item-price { color: #4caf50; font-weight: bold; font-size: 16px; } /* Adjusted green for better dark mode contrast */
+    .item-price { color: #4caf50; font-weight: bold; font-size: 16px; } 
     .item-cal { color: var(--text-color); opacity: 0.9; font-weight: bold; font-size: 16px; }
     
-    /* Allergen Pills (Pastels naturally look good in both modes) */
+    /* Allergen Pills */
     .allergen-container { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
     .allergen-label { font-size: 12px; color: var(--text-color); opacity: 0.6; margin-right: 4px; }
     .pill {
@@ -131,13 +126,13 @@ st.markdown(
         border: 1px solid var(--text-color); 
     }
 
-    /* Fix Tabs to Bottom - Now adapts to Dark Mode */
+    /* Fix Tabs to Bottom Navigation Bar */
     .stTabs [data-baseweb="tab-list"] {
         position: fixed;
         bottom: 0px;
         left: 0px;
         right: 0px;
-        background-color: var(--background-color); /* Changes to dark in Dark Mode */
+        background-color: var(--background-color); 
         padding: 6px 0px 12px 0px;
         z-index: 999;
         display: flex;
@@ -152,25 +147,23 @@ st.markdown(
         padding-bottom: 6px;
     }
 
-    /* Adjust chat floating input so it sits neatly above bottom navigation */
     .stChatFloatingInputContainer {
         bottom: 65px !important;
         background-color: transparent;
     }
 
-    /* Page padding to prevent elements hiding behind bottom navigation */
     .block-container {
         padding-bottom: 110px;
     }
-    </style>
-    
-    <div class="main-header">
-        <span style="font-size: 28px;">🎯</span>
-        <div>
-            <div class="sub-text">CBEMC-5 ChatBot by CHUNG-NOMOTO-RICALDE-VASCO</div>
-            <div class="main-title">ArcherEats</div>
-        </div>
+</style>
+
+<div class="main-header">
+    <span style="font-size: 28px;">🎯</span>
+    <div>
+        <div class="sub-text">CBEMC-5 ChatBot by CHUNG-NOMOTO-RICALDE-VASCO</div>
+        <div class="main-title">ArcherEats</div>
     </div>
+</div>
 """,
     unsafe_allow_html=True,
 )
