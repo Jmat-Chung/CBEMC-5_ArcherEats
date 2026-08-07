@@ -950,15 +950,6 @@ pairs = [
     # specific allergen question 
 
     [
-        r".*\b(does|is|has)\s+(.+)\b\s+(contain|have|has|got|with)\s+(any\s+|)(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*",
-        ["CHECK_ALLERGEN_%2|%5"],
-    ],
-    [
-        r".*\b(is there|are there)\s+(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\s+(in|inside|on)\s+(.+)\b.*",
-        ["CHECK_ALLERGEN_%4|%2"],
-    ],
-
-    [
         r".*\b(allergens in|allergens of|allergens for|allergen list for|allergen list of)\s+(.+)\b.*",
         ["ALLERGEN_LIST_%2"],
     ],
@@ -969,6 +960,15 @@ pairs = [
     [
         r".*\b(what allergens are in|what are the allergens in)\s+(.+)\b.*",
         ["ALLERGEN_LIST_%2"],
+    ],
+
+    [
+        r".*\b(does|is|has)\s+(.+)\b\s+(contain|have|has|got|with)\s+(any\s+|)(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\b.*",
+        ["CHECK_ALLERGEN_%2|%5"],
+    ],
+    [
+        r".*\b(is there|are there)\s+(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\s+(in|inside|on)\s+(.+)\b.*",
+        ["CHECK_ALLERGEN_%4|%2"],
     ],
 
     # asking for stuff about certain food
