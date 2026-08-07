@@ -155,18 +155,6 @@ st.markdown(
     .block-container {
         padding-bottom: 110px;
     }
-
-    /* Force chat input inside tabs to float at the bottom */
-    [data-testid="stChatInput"] {
-        position: fixed !important;
-        bottom: 60px !important; /* Adjust this if it overlaps your bottom tabs */
-        left: 0 !important;
-        right: 0 !important;
-        padding: 15px 20px !important;
-        background-color: white !important;
-        z-index: 998 !important;
-        border-top: 1px solid #e5e7eb !important;
-    }
     
     </style>
     
@@ -343,14 +331,14 @@ with tab_chat:
     # --- Chat Input Processing ---
     if user_input := st.chat_input("Ask ArcherEats..."):
         user_input = user_input.replace("\n", "").replace("\r", "").strip()
+        
+        # 1. Save user message to state (Do NOT draw it yet)
         st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("user", avatar="👤"):
-            st.markdown(user_input)
 
         user_input_clean = user_input.strip().lower()
         bot_text = ""
 
-        # 1. Active Order State Machine
+        # 2. Active Order State Machine
         if st.session_state.order_state == "AWAITING_RICE":
             if user_input_clean in ["y", "yes"]:
                 st.session_state.pending_order["with_rice"] = True
@@ -386,7 +374,7 @@ with tab_chat:
             else:
                 bot_text = "Please type CONFIRM or CANCEL."
 
-        # 2. Main Chatbot Routing (Connected directly to ChatBot.py responses)
+        # 3. Main Chatbot Routing 
         else:
             response = chatbot.respond(user_input)
 
@@ -469,7 +457,6 @@ with tab_chat:
                 elif clean_response == "SUGGEST_VEGETARIAN":
                     bot_text = get_food_suggestion("vegetarian")
 
-                # --- ITEM DETAIL HANDLERS (INFO, PRICE, CALORIES, ALLERGEN CHECKS) ---
                 elif clean_response.startswith("INFO_"):
                     food = clean_response.replace("INFO_", "")
                     bot_text, st.session_state.last_discussed_food = (
@@ -502,9 +489,7 @@ with tab_chat:
                         )
 
                 elif clean_response == "IDENTIFY_ALLERGY":
-                    bot_text = (
-                        "Please state your allergy (e.g., 'I am allergic to eggs')."
-                    )
+                    bot_text = "Please state your allergy (e.g., 'I am allergic to eggs')."
 
                 elif clean_response.startswith("CREATE_ORDER_"):
                     payload = clean_response.replace("CREATE_ORDER_", "")
@@ -522,10 +507,12 @@ with tab_chat:
                     "• **Order**: *'1 Roast Pork'*"
                 )
 
+        # 4. Save bot message to state and Refresh Page
         bot_text = str(bot_text).replace("\n", "  \n")
         st.session_state.messages.append({"role": "assistant", "content": bot_text})
-        with st.chat_message("assistant", avatar="🤖"):
-            st.markdown(bot_text)
+        
+        # This redraws the whole page perfectly so the new messages flow above the chat bar
+        st.rerun()
 
 
 # =====================================================================
