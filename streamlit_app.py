@@ -41,6 +41,13 @@ st.set_page_config(page_title="ArcherEats", page_icon="🎯", layout="centered")
 st.markdown(
     """
 <style>
+    /* Modern Ambient Green Glow (Option 1) */
+    .stApp {
+        background: radial-gradient(circle at 50% 0%, rgba(30, 90, 54, 0.22) 0%, transparent 65%),
+                    var(--background-color) !important;
+        background-attachment: fixed !important;
+    }
+
     /* Top Dark Green Header Bar */
     .main-header {
         background-color: #1e5a36;
