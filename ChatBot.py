@@ -918,6 +918,18 @@ def get_food_allergens_list(food_name, last_discussed_food=None):
 
 pairs = [
 
+    # just regular menu
+
+    [
+        r"(.*\b|)(menu|available|food|dishes|whats on|what is on)\b.*",
+        ["FETCH_MENU"],
+    ],
+
+    [
+        r".*\b(what is|what\'s|tell me about|describe|info on|details for)\s+(.+)\b\s*$",
+        ["INFO_%2"],
+    ],
+
     # dis is creating order na ilalagay sa napakacool na dummy queue YIPEE
 
     [
@@ -994,10 +1006,7 @@ pairs = [
 
     # asking for stuff about certain food
     
-    [
-        r".*\b(what is|what\'s|tell me about|describe|info on|details for)\s+(.+)\b\s*$",
-        ["INFO_%2"],
-    ],
+    
 
     # price checker
 
@@ -1219,12 +1228,7 @@ pairs = [
         ["IDENTIFY_ALLERGY"]
     ],
 
-    # just regular menu
-
-    [
-        r"(.*\b|)(menu|available|food|dishes|whats on|what is on)\b.*",
-        ["FETCH_MENU"],
-    ],
+    
 
     # oh cool
 
