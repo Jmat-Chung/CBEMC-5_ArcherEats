@@ -155,6 +155,19 @@ st.markdown(
     .block-container {
         padding-bottom: 110px;
     }
+
+    /* Force chat input inside tabs to float at the bottom */
+    [data-testid="stChatInput"] {
+        position: fixed !important;
+        bottom: 60px !important; /* Adjust this if it overlaps your bottom tabs */
+        left: 0 !important;
+        right: 0 !important;
+        padding: 15px 20px !important;
+        background-color: white !important;
+        z-index: 998 !important;
+        border-top: 1px solid #e5e7eb !important;
+    }
+    
     </style>
     
     <div class="main-header">
