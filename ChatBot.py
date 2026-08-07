@@ -874,6 +874,27 @@ def get_queue_display():
         f"{queue_chain}"
     )
 
+def get_food_allergens_list(food_name, last_discussed_food=None):
+    if food_name.lower().strip() == "it":
+        if not last_discussed_food:
+            return "Which food item are you referring to?", last_discussed_food
+        food_name = last_discussed_food
+
+    food_name_clean = food_name.strip().upper()
+    for item in FOOD_DATABASE:
+        if food_name_clean in item["name"].upper():
+            allergens = item.get("allergens", [])
+            if allergens:
+                allergens_str = ", ".join(allergens)
+                return f"{item['name']} contains the following allergens: {allergens_str}.", item["name"]
+            else:
+                return f"{item['name']} has no declared allergens.", item["name"]
+
+    return (
+        f"Sorry, I couldn't find '{food_name.title()}' on our menu.",
+        last_discussed_food,
+    )
+
 # regex
 
 pairs = [
@@ -922,7 +943,7 @@ pairs = [
     # add allergy to allergy list
 
     [
-        r".*\b(?:i have|i\'m allergic to|im allergic to|i am allergic to|i can\'t have|i cant have|cannot eat|can\'t eat|cant eat|allergic to)\s+(?:an?\s+)?([a-zA-Z]+)(?:\s+allergy)?.*",
+        r".*\b(?:i have|i\'m allergic to|im allergic to|i am allergic to|i can\'t have|i cant have|cannot eat|can\'t eat|cant eat|allergic to|not allowed to eat|dont eat|don\'t eat|avoid)\s+(?:an?\s+)?([a-zA-Z]+)(?:\s+allergy)?.*",
         ["REGISTER_ALLERGY_%1"],
     ],
 
@@ -935,6 +956,19 @@ pairs = [
     [
         r".*\b(is there|are there)\s+(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|chicken|wheat)\s+(in|inside|on)\s+(.+)\b.*",
         ["CHECK_ALLERGEN_%4|%2"],
+    ],
+
+    [
+        r".*\b(allergens in|allergens of|allergens for)\s+(.+)\b.*",
+        ["ALLERGEN_LIST_%2"],
+    ],
+    [
+        r".*\b(.+)\s+(allergens|allergen list)\b.*",
+        ["ALLERGEN_LIST_%1"],
+    ],
+    [
+        r".*\b(what allergens are in|what are the allergens in)\s+(.+)\b.*",
+        ["ALLERGEN_LIST_%2"],
     ],
 
     # asking for stuff about certain food
@@ -1529,6 +1563,13 @@ if __name__ == "__main__":
                 elif clean_response.startswith("MEAL_"):
                     meal = clean_response.replace("MEAL_", "")
                     print(get_meal_type_menu(meal))
+
+                elif clean_response.startswith("ALLERGEN_LIST_"):
+                    food = clean_response.replace("ALLERGEN_LIST_", "")
+                    msg, local_last_discussed_food = get_food_allergens_list(
+                        food, local_last_discussed_food
+                    )
+                    print(msg)
 
                 elif clean_response == "DISPLAY_QUEUE":
                     print(get_queue_display())

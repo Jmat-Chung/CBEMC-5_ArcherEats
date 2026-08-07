@@ -30,6 +30,7 @@ from ChatBot import (
     get_vegetarian_menu,
     orders_queue,
     register_user_allergy,
+    get_food_allergens_list,
 )
 
 # --- Streamlit Page Configuration ---
@@ -300,6 +301,14 @@ if user_input := st.chat_input("Ask ArcherEats..."):
             elif clean_response == "IDENTIFY_ALLERGY":
                 bot_text = (
                     "Please state your allergy (e.g., 'I am allergic to eggs')."
+                )
+
+            elif clean_response.startswith("ALLERGEN_LIST_"):
+                food = clean_response.replace("ALLERGEN_LIST_", "")
+                bot_text, st.session_state.last_discussed_food = (
+                    get_food_allergens_list(
+                        food, st.session_state.last_discussed_food
+                    )
                 )
             elif clean_response.startswith("CREATE_ORDER_"):
                 payload = clean_response.replace("CREATE_ORDER_", "")
