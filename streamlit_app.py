@@ -41,9 +41,9 @@ st.set_page_config(page_title="ArcherEats", page_icon="🎯", layout="centered")
 st.markdown(
     """
 <style>
-    /* Modern Ambient Green Glow (Option 1) */
-    .stApp {
-        background: radial-gradient(circle at 50% 0%, rgba(30, 90, 54, 0.22) 0%, transparent 65%),
+/* Modern Ambient Green Glow (Targeting View Container Directly) */
+    [data-testid="stAppViewContainer"], .stApp {
+        background: radial-gradient(circle at 50% 0%, rgba(30, 90, 54, 0.45) 0%, transparent 70%),
                     var(--background-color) !important;
         background-attachment: fixed !important;
     }
