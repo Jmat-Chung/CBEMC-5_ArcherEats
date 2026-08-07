@@ -8,6 +8,7 @@
 #    - VASCO, Victor Gerald N.
 # =====================================================================
 
+from datetime import datetime
 import streamlit as st
 
 # Import chatbot engine and data helpers from ChatBot.py
@@ -20,6 +21,7 @@ from ChatBot import (
     get_available_menu,
     get_category_menu,
     get_category_removed_menu,
+    get_food_allergens_list,
     get_food_calories,
     get_food_description,
     get_food_price,
@@ -30,41 +32,137 @@ from ChatBot import (
     get_vegetarian_menu,
     orders_queue,
     register_user_allergy,
-    get_food_allergens_list,
 )
 
 # --- Streamlit Page Configuration ---
-st.set_page_config(page_title="ArcherEats", page_icon="🏹", layout="centered")
+st.set_page_config(page_title="ArcherEats", page_icon="🎯", layout="centered")
 
-# --- Custom Styling Header ---
+# --- Custom Styling (Header, Cards, Allergen Pills, Bottom Tabs) ---
 st.markdown(
     """
     <style>
+    /* Global App Background */
+    .stApp {
+        background: linear-gradient(to bottom, #f4f7f4, #ffffff);
+    }
+    
+    /* Top Dark Green Header Bar */
     .main-header {
         background-color: #1e5a36;
         color: white;
-        padding: 20px 25px;
+        padding: 18px 22px;
         border-radius: 12px;
-        margin-bottom: 25px;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
     .main-header .sub-text {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 300;
         opacity: 0.9;
     }
     .main-header .main-title {
         font-family: 'Georgia', serif;
-        font-size: 34px;
+        font-size: 30px;
         font-weight: bold;
-        margin-top: 4px;
+        margin-top: 2px;
+    }
+
+    /* Custom Menu Cards */
+    .menu-card {
+        background-color: white;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        border-top: 5px solid #1e5a36;
+    }
+    .item-title { 
+        font-size: 22px; 
+        font-weight: bold; 
+        font-family: 'Georgia', serif; 
+        color: #111; 
+        margin-bottom: 6px; 
+    }
+    .item-desc { 
+        font-size: 14px; 
+        color: #666; 
+        margin-bottom: 14px; 
+        line-height: 1.4;
+    }
+    .item-stats { 
+        font-size: 14px; 
+        color: #aaa; 
+        margin-bottom: 14px; 
+        display: flex;
+        gap: 12px;
+    }
+    .item-price { color: #1e5a36; font-weight: bold; font-size: 16px; }
+    .item-cal { color: #222; font-weight: bold; font-size: 16px; }
+    
+    /* Allergen Pills */
+    .allergen-container { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .allergen-label { font-size: 12px; color: #888; margin-right: 4px; }
+    .pill {
+        padding: 3px 10px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    .pill-Gluten { background-color: #fef0c7; color: #b58509; }
+    .pill-Milk { background-color: #e0f2fe; color: #026aa2; }
+    .pill-Fish { background-color: #e0f2fe; color: #0284c7; }
+    .pill-Seafood { background-color: #ffe4e6; color: #e11d48; }
+    .pill-Celery { background-color: #dcfce7; color: #166534; }
+    .pill-Mustard { background-color: #ffedd5; color: #c2410c; }
+    .pill-Soybean { background-color: #dcfce7; color: #15803d; }
+    .pill-Egg, .pill-Eggs { background-color: #fef0c7; color: #b58509; }
+    .pill-Chicken { background-color: #fef3c7; color: #92400e; }
+    .pill-Sulphite { background-color: #f3e8ff; color: #6b21a8; }
+    .pill-Crustacean, .pill-Crustaceans { background-color: #ffe4e6; color: #9f1239; }
+    .pill-default { background-color: #f1f5f9; color: #475569; }
+
+    /* Fix Tabs to Bottom (Mobile App Navigation Bar) */
+    .stTabs [data-baseweb="tab-list"] {
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        background-color: #ffffff;
+        padding: 6px 0px 12px 0px;
+        z-index: 999;
+        display: flex;
+        justify-content: space-around;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+        border-top: 1px solid #e5e7eb;
+    }
+    .stTabs [data-baseweb="tab"] {
+        flex: 1;
+        justify-content: center;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    /* Adjust chat floating input so it sits neatly above bottom navigation */
+    .stChatFloatingInputContainer {
+        bottom: 65px !important;
+    }
+
+    /* Page padding to prevent elements hiding behind bottom navigation */
+    .block-container {
+        padding-bottom: 110px;
     }
     </style>
     
     <div class="main-header">
-        <div class="sub-text">CBEMC-5 ChatBot by CHUNG-NOMOTO-RICALDE-VASCO</div>
-        <div class="main-title">ArcherEats</div>
+        <span style="font-size: 28px;">🎯</span>
+        <div>
+            <div class="sub-text">CBEMC-5 ChatBot by CHUNG-NOMOTO-RICALDE-VASCO</div>
+            <div class="main-title">ArcherEats</div>
+        </div>
     </div>
 """,
     unsafe_allow_html=True,
@@ -145,198 +243,290 @@ def generate_order_summary():
     )
 
 
-# --- Render Conversation History ---
-for msg in st.session_state.messages:
-    avatar = "🤖" if msg["role"] == "assistant" else "👤"
-    with st.chat_message(msg["role"], avatar=avatar):
-        st.markdown(msg["content"])
+# --- Tabs Navigation ---
+tab_menu, tab_cart, tab_chat, tab_profile = st.tabs(
+    ["📋 Menu", "🛍️ Cart", "💬 Chat", "👤 Profile"]
+)
 
 
-# --- Chat Input Processing ---
-if user_input := st.chat_input("Ask ArcherEats..."):
-    user_input = user_input.replace("\n", "").replace("\r", "").strip()
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    with st.chat_message("user", avatar="👤"):
-        st.markdown(user_input)
+# =====================================================================
+# TAB 1: MENU PAGE
+# =====================================================================
+with tab_menu:
+    st.markdown(
+        "<h1 style='font-family: Georgia, serif; margin-bottom: 0px;'>Today's Menu</h1>",
+        unsafe_allow_html=True,
+    )
 
-    user_input_clean = user_input.strip().lower()
-    bot_text = ""
+    current_date = datetime.now().strftime("%A, %B %d").replace(" 0", " ")
+    st.markdown(
+        f"<p style='color: #888; font-size: 15px; margin-bottom: 22px;'>{current_date}</p>",
+        unsafe_allow_html=True,
+    )
 
-    # 1. Active Order State Machine
-    if st.session_state.order_state == "AWAITING_RICE":
-        if user_input_clean in ["y", "yes"]:
-            st.session_state.pending_order["with_rice"] = True
-            bot_text = generate_order_summary()
-            st.session_state.order_state = "AWAITING_CONFIRM"
-        elif user_input_clean in ["n", "no"]:
-            st.session_state.pending_order["with_rice"] = False
-            bot_text = generate_order_summary()
-            st.session_state.order_state = "AWAITING_CONFIRM"
-        else:
-            bot_text = "Please answer with 'y' or 'n'."
+    for item in FOOD_DATABASE:
+        if not item.get("isAvailable", True):
+            continue
 
-    elif st.session_state.order_state == "AWAITING_CONFIRM":
-        if user_input_clean == "confirm":
-            pending = st.session_state.pending_order
-            order_num = len(orders_queue) + 1
-            orders_queue.append(
-                {
-                    "id_number": USER_ID_NUMBER,
-                    "food_name": pending["item"]["name"],
-                    "count": pending["count"],
-                    "with_rice": pending["with_rice"],
-                    "order_number": order_num,
-                }
-            )
-            bot_text = f"✅ **Order Placed Successfully!**\nYour order number is `#{order_num}`."
-            st.session_state.order_state = "IDLE"
-            st.session_state.pending_order = None
-        elif user_input_clean == "cancel":
-            bot_text = "Order cancelled."
-            st.session_state.order_state = "IDLE"
-            st.session_state.pending_order = None
-        else:
-            bot_text = "Please type CONFIRM or CANCEL."
+        allergens = item.get("allergens", [])
+        allergens_html = ""
+        for a in allergens:
+            pill_class = f"pill-{a.capitalize()}"
+            allergens_html += f'<span class="pill {pill_class}">{a.capitalize()}</span>'
 
-    # 2. Main Chatbot Routing (Connected directly to ChatBot.py responses)
+        if not allergens_html:
+            allergens_html = '<span class="pill pill-default">None</span>'
+
+        desc = item.get("description", "")
+        if not desc:
+            desc = "Delicious meal prepared fresh daily at the UH Cafeteria."
+
+        kcal_val = item.get("kcal", item.get("calories", "N/A"))
+
+        card_html = f"""
+        <div class="menu-card">
+            <div class="item-title">{item['name'].title()}</div>
+            <div class="item-desc">{desc}</div>
+            <div class="item-stats">
+                <span>Price <span class="item-price">₱{item['price']}</span></span>
+                <span style="color: #ddd;">|</span>
+                <span>Calories <span class="item-cal">{kcal_val} kcal</span></span>
+            </div>
+            <div class="allergen-container">
+                <span class="allergen-label">Contains:</span>
+                {allergens_html}
+            </div>
+        </div>
+        """
+        st.markdown(card_html, unsafe_allow_html=True)
+
+
+# =====================================================================
+# TAB 2: CART & QUEUE
+# =====================================================================
+with tab_cart:
+    st.markdown("### 🛍️ Current Orders Queue")
+    if not orders_queue:
+        st.info("No active orders in queue right now. Use the Chat to place an order!")
     else:
-        response = chatbot.respond(user_input)
+        for order in orders_queue:
+            rice_text = "with rice" if order["with_rice"] else "ala carte"
+            st.success(
+                f"**Order #{order['order_number']}** — "
+                f"{order['count']}x {order['food_name']} ({rice_text}) | ID: `{order['id_number']}`"
+            )
 
-        if response:
-            clean_response = response.strip()
 
-            if clean_response == "FETCH_MENU":
-                bot_text = get_available_menu()
+# =====================================================================
+# TAB 3: CHATBOT INTERFACE
+# =====================================================================
+with tab_chat:
+    # --- Render Conversation History ---
+    for msg in st.session_state.messages:
+        avatar = "🤖" if msg["role"] == "assistant" else "👤"
+        with st.chat_message(msg["role"], avatar=avatar):
+            st.markdown(msg["content"])
 
-            elif clean_response.startswith("ALLERGEN_LIST_"):
-                food = clean_response.replace("ALLERGEN_LIST_", "")
-                bot_text, st.session_state.last_discussed_food = (
-                    get_food_allergens_list(
-                        food, st.session_state.last_discussed_food
-                    )
-                )
+    # --- Chat Input Processing ---
+    if user_input := st.chat_input("Ask ArcherEats..."):
+        user_input = user_input.replace("\n", "").replace("\r", "").strip()
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        with st.chat_message("user", avatar="👤"):
+            st.markdown(user_input)
 
-            elif clean_response.startswith("REGISTER_ALLERGY_"):
-                allergen = clean_response.replace("REGISTER_ALLERGY_", "")
-                confirm_msg, st.session_state.user_allergies = (
-                    register_user_allergy(
-                        allergen, st.session_state.user_allergies
-                    )
-                )
-                safe_menu = get_allergen_safe_menu(
-                    user_allergies=st.session_state.user_allergies
-                )
-                bot_text = f"{confirm_msg}\n\n{safe_menu}"
+        user_input_clean = user_input.strip().lower()
+        bot_text = ""
 
-            elif clean_response.startswith("ALLERGEN_"):
-                allergen = clean_response.replace("ALLERGEN_", "")
-                bot_text = get_allergen_safe_menu(
-                    allergen, st.session_state.user_allergies
-                )
+        # 1. Active Order State Machine
+        if st.session_state.order_state == "AWAITING_RICE":
+            if user_input_clean in ["y", "yes"]:
+                st.session_state.pending_order["with_rice"] = True
+                bot_text = generate_order_summary()
+                st.session_state.order_state = "AWAITING_CONFIRM"
+            elif user_input_clean in ["n", "no"]:
+                st.session_state.pending_order["with_rice"] = False
+                bot_text = generate_order_summary()
+                st.session_state.order_state = "AWAITING_CONFIRM"
+            else:
+                bot_text = "Please answer with 'y' or 'n'."
 
-            elif clean_response == "FETCH_VEGETARIAN":
-                bot_text = get_vegetarian_menu()
-            elif clean_response == "DISPLAY_QUEUE":
-                bot_text = get_queue_display()
-            elif clean_response.startswith("MEAL_"):
-                meal = clean_response.replace("MEAL_", "")
-                bot_text = get_meal_type_menu(meal)
-            elif clean_response.startswith("CATEGORY_"):
-                bot_text = get_category_menu(
-                    clean_response.replace("CATEGORY_", "")
+        elif st.session_state.order_state == "AWAITING_CONFIRM":
+            if user_input_clean == "confirm":
+                pending = st.session_state.pending_order
+                order_num = len(orders_queue) + 1
+                orders_queue.append(
+                    {
+                        "id_number": USER_ID_NUMBER,
+                        "food_name": pending["item"]["name"],
+                        "count": pending["count"],
+                        "with_rice": pending["with_rice"],
+                        "order_number": order_num,
+                    }
                 )
-            elif clean_response.startswith("WITHOUT_"):
-                bot_text = get_category_removed_menu(
-                    clean_response.replace("WITHOUT_", "")
-                )
-            elif clean_response.startswith("FOOD_WITH_ALLERGEN_"):
-                bot_text = get_food_with_allergen(
-                    clean_response.replace("FOOD_WITH_ALLERGEN_", "")
-                )
-            
-            
-            elif clean_response.startswith("SUGGEST_CATEGORY_"):
-                cat = clean_response.replace("SUGGEST_CATEGORY_", "")
-                bot_text = get_food_suggestion("category", cat)
-            elif clean_response.startswith("SUGGEST_WITHOUT_"):
-                cat = clean_response.replace("SUGGEST_WITHOUT_", "")
-                bot_text = get_food_suggestion("without_category", cat)
-            elif clean_response.startswith("SUGGEST_BUDGET_"):
-                amount = clean_response.replace("SUGGEST_BUDGET_", "")
-                bot_text = get_food_suggestion("budget", amount)
-            elif clean_response.startswith("SUGGEST_ALLERGEN_"):
-                allergen = clean_response.replace("SUGGEST_ALLERGEN_", "")
-                bot_text = get_food_suggestion("allergen", allergen)
-            elif clean_response == "SUGGEST_HIGHCAL":
-                bot_text = get_food_suggestion("high_cal")
-            elif clean_response == "SUGGEST_LOWCAL":
-                bot_text = get_food_suggestion("low_cal")
-            elif clean_response == "SUGGEST_GENERAL":
-                bot_text = get_food_suggestion("general")
-            elif clean_response == "SUGGEST_CHEAPEST":
-                bot_text = get_food_suggestion("cheapest")
-            elif clean_response == "SUGGEST_LOWESTCAL":
-                bot_text = get_food_suggestion("lowest_cal")
-            elif clean_response == "SUGGEST_FILLING":
-                bot_text = get_food_suggestion("filling")
-            elif clean_response == "SUGGEST_VEGETARIAN":
-                bot_text = get_food_suggestion("vegetarian")
+                bot_text = f"✅ **Order Placed Successfully!**\nYour order number is `#{order_num}`."
+                st.session_state.order_state = "IDLE"
+                st.session_state.pending_order = None
+            elif user_input_clean == "cancel":
+                bot_text = "Order cancelled."
+                st.session_state.order_state = "IDLE"
+                st.session_state.pending_order = None
+            else:
+                bot_text = "Please type CONFIRM or CANCEL."
 
-            # --- ITEM DETAIL HANDLERS (INFO, PRICE, CALORIES, ALLERGEN CHECKS) ---
-            elif clean_response.startswith("INFO_"):
-                food = clean_response.replace("INFO_", "")
-                bot_text, st.session_state.last_discussed_food = (
-                    get_food_description(
-                        food, st.session_state.last_discussed_food
-                    )
-                )
-            elif clean_response.startswith("PRICE_"):
-                food = clean_response.replace("PRICE_", "")
-                bot_text, st.session_state.last_discussed_food = (
-                    get_food_price(food, st.session_state.last_discussed_food)
-                )
-            elif clean_response.startswith("CALORIES_"):
-                food = clean_response.replace("CALORIES_", "")
-                bot_text, st.session_state.last_discussed_food = (
-                    get_food_calories(
-                        food, st.session_state.last_discussed_food
-                    )
-                )
-            elif clean_response.startswith("CHECK_ALLERGEN_"):
-                payload = clean_response.replace("CHECK_ALLERGEN_", "")
-                if "|" in payload:
-                    food_item, allergen = payload.split("|", 1)
+        # 2. Main Chatbot Routing (Connected directly to ChatBot.py responses)
+        else:
+            response = chatbot.respond(user_input)
+
+            if response:
+                clean_response = response.strip()
+
+                if clean_response == "FETCH_MENU":
+                    bot_text = get_available_menu()
+
+                elif clean_response.startswith("ALLERGEN_LIST_"):
+                    food = clean_response.replace("ALLERGEN_LIST_", "")
                     bot_text, st.session_state.last_discussed_food = (
-                        check_item_allergen(
-                            food_item,
-                            allergen,
-                            st.session_state.last_discussed_food,
+                        get_food_allergens_list(
+                            food, st.session_state.last_discussed_food
                         )
                     )
 
-            elif clean_response == "IDENTIFY_ALLERGY":
+                elif clean_response.startswith("REGISTER_ALLERGY_"):
+                    allergen = clean_response.replace("REGISTER_ALLERGY_", "")
+                    confirm_msg, st.session_state.user_allergies = (
+                        register_user_allergy(
+                            allergen, st.session_state.user_allergies
+                        )
+                    )
+                    safe_menu = get_allergen_safe_menu(
+                        user_allergies=st.session_state.user_allergies
+                    )
+                    bot_text = f"{confirm_msg}\n\n{safe_menu}"
+
+                elif clean_response.startswith("ALLERGEN_"):
+                    allergen = clean_response.replace("ALLERGEN_", "")
+                    bot_text = get_allergen_safe_menu(
+                        allergen, st.session_state.user_allergies
+                    )
+
+                elif clean_response == "FETCH_VEGETARIAN":
+                    bot_text = get_vegetarian_menu()
+                elif clean_response == "DISPLAY_QUEUE":
+                    bot_text = get_queue_display()
+                elif clean_response.startswith("MEAL_"):
+                    meal = clean_response.replace("MEAL_", "")
+                    bot_text = get_meal_type_menu(meal)
+                elif clean_response.startswith("CATEGORY_"):
+                    bot_text = get_category_menu(
+                        clean_response.replace("CATEGORY_", "")
+                    )
+                elif clean_response.startswith("WITHOUT_"):
+                    bot_text = get_category_removed_menu(
+                        clean_response.replace("WITHOUT_", "")
+                    )
+                elif clean_response.startswith("FOOD_WITH_ALLERGEN_"):
+                    bot_text = get_food_with_allergen(
+                        clean_response.replace("FOOD_WITH_ALLERGEN_", "")
+                    )
+
+                elif clean_response.startswith("SUGGEST_CATEGORY_"):
+                    cat = clean_response.replace("SUGGEST_CATEGORY_", "")
+                    bot_text = get_food_suggestion("category", cat)
+                elif clean_response.startswith("SUGGEST_WITHOUT_"):
+                    cat = clean_response.replace("SUGGEST_WITHOUT_", "")
+                    bot_text = get_food_suggestion("without_category", cat)
+                elif clean_response.startswith("SUGGEST_BUDGET_"):
+                    amount = clean_response.replace("SUGGEST_BUDGET_", "")
+                    bot_text = get_food_suggestion("budget", amount)
+                elif clean_response.startswith("SUGGEST_ALLERGEN_"):
+                    allergen = clean_response.replace("SUGGEST_ALLERGEN_", "")
+                    bot_text = get_food_suggestion("allergen", allergen)
+                elif clean_response == "SUGGEST_HIGHCAL":
+                    bot_text = get_food_suggestion("high_cal")
+                elif clean_response == "SUGGEST_LOWCAL":
+                    bot_text = get_food_suggestion("low_cal")
+                elif clean_response == "SUGGEST_GENERAL":
+                    bot_text = get_food_suggestion("general")
+                elif clean_response == "SUGGEST_CHEAPEST":
+                    bot_text = get_food_suggestion("cheapest")
+                elif clean_response == "SUGGEST_LOWESTCAL":
+                    bot_text = get_food_suggestion("lowest_cal")
+                elif clean_response == "SUGGEST_FILLING":
+                    bot_text = get_food_suggestion("filling")
+                elif clean_response == "SUGGEST_VEGETARIAN":
+                    bot_text = get_food_suggestion("vegetarian")
+
+                # --- ITEM DETAIL HANDLERS (INFO, PRICE, CALORIES, ALLERGEN CHECKS) ---
+                elif clean_response.startswith("INFO_"):
+                    food = clean_response.replace("INFO_", "")
+                    bot_text, st.session_state.last_discussed_food = (
+                        get_food_description(
+                            food, st.session_state.last_discussed_food
+                        )
+                    )
+                elif clean_response.startswith("PRICE_"):
+                    food = clean_response.replace("PRICE_", "")
+                    bot_text, st.session_state.last_discussed_food = (
+                        get_food_price(food, st.session_state.last_discussed_food)
+                    )
+                elif clean_response.startswith("CALORIES_"):
+                    food = clean_response.replace("CALORIES_", "")
+                    bot_text, st.session_state.last_discussed_food = (
+                        get_food_calories(
+                            food, st.session_state.last_discussed_food
+                        )
+                    )
+                elif clean_response.startswith("CHECK_ALLERGEN_"):
+                    payload = clean_response.replace("CHECK_ALLERGEN_", "")
+                    if "|" in payload:
+                        food_item, allergen = payload.split("|", 1)
+                        bot_text, st.session_state.last_discussed_food = (
+                            check_item_allergen(
+                                food_item,
+                                allergen,
+                                st.session_state.last_discussed_food,
+                            )
+                        )
+
+                elif clean_response == "IDENTIFY_ALLERGY":
+                    bot_text = (
+                        "Please state your allergy (e.g., 'I am allergic to eggs')."
+                    )
+
+                elif clean_response.startswith("CREATE_ORDER_"):
+                    payload = clean_response.replace("CREATE_ORDER_", "")
+                    if "|" in payload:
+                        count_str, food_query = payload.split("|", 1)
+                        bot_text = start_web_order(count_str, food_query)
+                else:
+                    bot_text = clean_response
+            else:
                 bot_text = (
-                    "Please state your allergy (e.g., 'I am allergic to eggs')."
+                    "I didn't quite catch that. Here are a few ways you can ask me:\n\n"
+                    "• **Menu**: *'What's on the menu?'*\n"
+                    "• **Allergies**: *'I have a soy allergy'*\n"
+                    "• **Suggestions**: *'Suggest a meal under 100 pesos'*\n"
+                    "• **Order**: *'1 Roast Pork'*"
                 )
 
-            
-            elif clean_response.startswith("CREATE_ORDER_"):
-                payload = clean_response.replace("CREATE_ORDER_", "")
-                if "|" in payload:
-                    count_str, food_query = payload.split("|", 1)
-                    bot_text = start_web_order(count_str, food_query)
-            else:
-                bot_text = clean_response
-        else:
-            bot_text = (
-                "I didn't quite catch that. Here are a few ways you can ask me:\n\n"
-                "• **Menu**: *'What's on the menu?'*\n"
-                "• **Allergies**: *'I have a soy allergy'*\n"
-                "• **Suggestions**: *'Suggest a meal under 100 pesos'*\n"
-                "• **Order**: *'1 Roast Pork'*"
-            )
+        bot_text = str(bot_text).replace("\n", "  \n")
+        st.session_state.messages.append({"role": "assistant", "content": bot_text})
+        with st.chat_message("assistant", avatar="🤖"):
+            st.markdown(bot_text)
 
-    bot_text = str(bot_text).replace("\n", "  \n")
-    st.session_state.messages.append({"role": "assistant", "content": bot_text})
-    with st.chat_message("assistant", avatar="🤖"):
-        st.markdown(bot_text)
+
+# =====================================================================
+# TAB 4: PROFILE
+# =====================================================================
+with tab_profile:
+    st.markdown("### 👤 User Profile")
+    st.write(f"**ID Number:** `{USER_ID_NUMBER}`")
+
+    registered = st.session_state.user_allergies
+    if registered:
+        allergies_formatted = ", ".join([a.capitalize() for a in registered])
+        st.write(f"**Registered Allergies:** {allergies_formatted}")
+    else:
+        st.write("**Registered Allergies:** None declared")
+
+    st.write("**Account Type:** Student / Customer")
