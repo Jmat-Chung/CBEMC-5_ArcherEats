@@ -959,7 +959,7 @@ pairs = [
     ],
 
     [
-        r".*\b(allergens in|allergens of|allergens for)\s+(.+)\b.*",
+        r".*\b(allergens in|allergens of|allergens for|allergen list for|allergen list of)\s+(.+)\b.*",
         ["ALLERGEN_LIST_%2"],
     ],
     [
@@ -1113,7 +1113,7 @@ pairs = [
         ["WITHOUT_meat"],
     ],
     [
-        r".*\b(allergic to|allergy|allergies|no|without|free from|exclude|minus|skip|remove)\s+(to\s+|)\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nut|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|wheat|chicken)\b.*",
+        r".*\b(allergic to|allergy|allergies|free from)\s+(to\s+|)\b(egg|eggs|gluten|soy|soybean|fish|seafood|milk|dairy|nut|nuts|celery|mustard|sulphite|crustacean|crustaceans|sesame|wheat|chicken)\b.*",
         ["ALLERGEN_%3"],
     ],
     [
