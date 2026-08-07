@@ -233,11 +233,14 @@ if user_input := st.chat_input("Ask ArcherEats..."):
                 bot_text = get_allergen_safe_menu(
                     allergen, st.session_state.user_allergies
                 )
-                
+
             elif clean_response == "FETCH_VEGETARIAN":
                 bot_text = get_vegetarian_menu()
             elif clean_response == "DISPLAY_QUEUE":
                 bot_text = get_queue_display()
+            elif clean_response.startswith("MEAL_"):
+                meal = clean_response.replace("MEAL_", "")
+                bot_text = get_meal_type_menu(meal)
             elif clean_response.startswith("CATEGORY_"):
                 bot_text = get_category_menu(
                     clean_response.replace("CATEGORY_", "")
