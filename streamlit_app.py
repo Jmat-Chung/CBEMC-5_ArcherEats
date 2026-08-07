@@ -40,13 +40,13 @@ st.set_page_config(page_title="ArcherEats", page_icon="🎯", layout="centered")
 # --- Custom Styling (Header, Cards, Allergen Pills, Bottom Tabs) ---
 st.markdown(
     """
-    <style>
-    /* Global App Background */
-    .stApp {
-        background: linear-gradient(to bottom, #f4f7f4, #ffffff);
-    }
+<style>
+    /* 
+       Note: We removed the .stApp background gradient so 
+       Streamlit can naturally handle the dark/light background.
+    */
     
-    /* Top Dark Green Header Bar */
+    /* Top Dark Green Header Bar (Stays green in both modes) */
     .main-header {
         background-color: #1e5a36;
         color: white;
@@ -71,41 +71,43 @@ st.markdown(
         margin-top: 2px;
     }
 
-    /* Custom Menu Cards */
+    /* Custom Menu Cards - Now adapts to Dark Mode */
     .menu-card {
-        background-color: white;
+        background-color: var(--secondary-background-color); /* Changes to dark grey in Dark Mode */
         border-radius: 16px;
         padding: 20px;
         margin-bottom: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         border-top: 5px solid #1e5a36;
     }
     .item-title { 
         font-size: 22px; 
         font-weight: bold; 
         font-family: 'Georgia', serif; 
-        color: #111; 
+        color: var(--text-color); /* Changes to white in Dark Mode */
         margin-bottom: 6px; 
     }
     .item-desc { 
         font-size: 14px; 
-        color: #666; 
+        color: var(--text-color); 
+        opacity: 0.75; /* Uses opacity instead of grey hex so it works everywhere */
         margin-bottom: 14px; 
         line-height: 1.4;
     }
     .item-stats { 
         font-size: 14px; 
-        color: #aaa; 
+        color: var(--text-color);
+        opacity: 0.6;
         margin-bottom: 14px; 
         display: flex;
         gap: 12px;
     }
-    .item-price { color: #1e5a36; font-weight: bold; font-size: 16px; }
-    .item-cal { color: #222; font-weight: bold; font-size: 16px; }
+    .item-price { color: #4caf50; font-weight: bold; font-size: 16px; } /* Adjusted green for better dark mode contrast */
+    .item-cal { color: var(--text-color); opacity: 0.9; font-weight: bold; font-size: 16px; }
     
-    /* Allergen Pills */
+    /* Allergen Pills (Pastels naturally look good in both modes) */
     .allergen-container { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-    .allergen-label { font-size: 12px; color: #888; margin-right: 4px; }
+    .allergen-label { font-size: 12px; color: var(--text-color); opacity: 0.6; margin-right: 4px; }
     .pill {
         padding: 3px 10px;
         border-radius: 16px;
@@ -123,21 +125,25 @@ st.markdown(
     .pill-Chicken { background-color: #fef3c7; color: #92400e; }
     .pill-Sulphite { background-color: #f3e8ff; color: #6b21a8; }
     .pill-Crustacean, .pill-Crustaceans { background-color: #ffe4e6; color: #9f1239; }
-    .pill-default { background-color: #f1f5f9; color: #475569; }
+    .pill-default { 
+        background-color: var(--background-color); 
+        color: var(--text-color); 
+        border: 1px solid var(--text-color); 
+    }
 
-    /* Fix Tabs to Bottom (Mobile App Navigation Bar) */
+    /* Fix Tabs to Bottom - Now adapts to Dark Mode */
     .stTabs [data-baseweb="tab-list"] {
         position: fixed;
         bottom: 0px;
         left: 0px;
         right: 0px;
-        background-color: #ffffff;
+        background-color: var(--background-color); /* Changes to dark in Dark Mode */
         padding: 6px 0px 12px 0px;
         z-index: 999;
         display: flex;
         justify-content: space-around;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
-        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+        border-top: 1px solid var(--secondary-background-color);
     }
     .stTabs [data-baseweb="tab"] {
         flex: 1;
@@ -149,13 +155,13 @@ st.markdown(
     /* Adjust chat floating input so it sits neatly above bottom navigation */
     .stChatFloatingInputContainer {
         bottom: 65px !important;
+        background-color: transparent;
     }
 
     /* Page padding to prevent elements hiding behind bottom navigation */
     .block-container {
         padding-bottom: 110px;
     }
-    
     </style>
     
     <div class="main-header">
