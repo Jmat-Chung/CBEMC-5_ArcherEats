@@ -921,7 +921,7 @@ pairs = [
     # just regular menu
 
     [
-        r"(.*\b|)(menu|available|food|dishes|whats on|what is on)\b.*",
+        r"(.*\b|)(menu|available|dishes|whats on|what is on)\b.*",
         ["FETCH_MENU"],
     ],
 
