@@ -1109,8 +1109,8 @@ pairs = [
 
     #Suggestion Vegetarian
     [
-        r".*\b(suggest|recommend|what should i eat|pick for me)\b.*",
-        ["SUGGEST_GENERAL"],
+        r".*\b(suggest|recommend|pick|want)\b.*\b(vegetarian|veggie|plant based|meatless)\b.*",
+        ["SUGGEST_VEGETARIAN"],
     ],
 
     # just indecisive
